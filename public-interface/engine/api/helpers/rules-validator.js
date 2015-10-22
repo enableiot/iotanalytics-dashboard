@@ -15,6 +15,8 @@
  */
 
 'use strict';
+var postgresProvider = require('../../../iot-entities/postgresql'),
+    Device = postgresProvider.devices;
 var errorList = require('../../res/errors');
 var conditionTypes = {
     basic: 'basic',
@@ -26,12 +28,57 @@ var conditionTypes = {
 var validatePopulation = function (rule, errors) {
     // POPULATION
     // at least one child is required
-    if (rule.population.name === undefined &&
-        rule.population.ids === undefined &&
-        rule.population.tags === undefined &&
-        rule.population.attributes === undefined) {
+    // TODO: at the moment we require that population.ids are set but the final goal is that at least one child is required.
+    if (rule.population.ids === undefined) {
         errors.push(errorList.Errors.Rule.Validation.PopulationItemRequired.code);
     }
+};
+
+var validateDevicesHasComponents = function(rule, accountId, cb) {
+    // HAS_COMPONENTS
+    // Device and Components needs to be there
+
+    Device.getDevices(accountId, {id: {$in: rule.population.ids}}, function(err, devices) {
+        //each device should have at least one component
+        if(!err){
+            devices.forEach(function(device){
+                if(device.components.length === 0){
+                    cb(errorList.Errors.Rule.Validation.DeviceComponents.NotFound);
+                    return false;
+                }
+            });
+            //components from list should be attached to device
+            rule.conditions.values.forEach(function(condition){
+                var componentFromRule = condition.component.name;
+                var componentFound = false;
+                devices.forEach(function(device) {
+                    device.components.forEach(function (currentDeviceComponent) {
+                        if (currentDeviceComponent.name === componentFromRule) {
+                            componentFound = true;
+                        }
+                    });
+                });
+                if(!componentFound){
+                    cb(errorList.Errors.Rule.Validation.DeviceComponents.NotInDevice);
+                    return false;
+                }
+            });
+            //there should be no extra devices which components are not used in the rule
+            var rule_components_names = rule.conditions.values.map(function(condition) {return condition.component.name;});
+            devices.forEach(function(device){
+                var device_components_names = device.components.map(function(comp) {return comp.name;});
+                var used_components = device_components_names.filter(function(dev_comp) {return rule_components_names.indexOf(dev_comp) >= 0;});
+                if (used_components.length === 0) {
+                    cb(errorList.Errors.Rule.Validation.DeviceComponents.NotUsed);
+                    return false;
+                }
+            });
+            cb(null);
+        } else {
+            cb(err);
+        }
+
+    });
 };
 
 var validateConditionsOperator = function (rule, errors) {
@@ -169,6 +216,9 @@ var validateValuesOnBetweenOperator = function (rule, errors) {
 module.exports = function () {
     var _self = this;
 
+    _self.validateDevicesHasComponents = function(rule, accountId, cb){
+        validateDevicesHasComponents(rule, accountId, cb);
+    };
     _self.validate = function (rule) {
         var errors = [];
         validatePopulation(rule, errors);

@@ -22,7 +22,7 @@ var expect = require('expect.js'),
 
 describe('rules validator', function(){
     describe('population', function(){
-        it('should return no errors if a rule contains at least one population child - name', function(done){
+        it('should return errors if a rule contains at least one population child - name', function(done){
             // prepare
             var rule = {
                 population: {
@@ -34,7 +34,7 @@ describe('rules validator', function(){
             var errors = validator.validate(rule);
 
             // attest
-            expect(errors.length).to.equal(0);
+            expect(errors.length).to.equal(1);
 
             done();
         });
@@ -56,7 +56,7 @@ describe('rules validator', function(){
             done();
         });
 
-        it('should return no errors if a rule contains at least one population child - tags', function(done){
+        it('should return errors if a rule contains at least one population child - tags', function(done){
             // prepare
             var rule = {
                 population: {
@@ -68,7 +68,7 @@ describe('rules validator', function(){
             var errors = validator.validate(rule);
 
             // attest
-            expect(errors.length).to.equal(0);
+            expect(errors.length).to.equal(1);
 
             done();
         });
@@ -96,7 +96,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         values: [
@@ -127,7 +127,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -170,7 +170,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         values: [
@@ -215,7 +215,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -256,7 +256,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -297,7 +297,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -328,7 +328,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -361,7 +361,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -394,7 +394,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -428,7 +428,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -462,7 +462,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -496,7 +496,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -530,7 +530,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -567,7 +567,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -601,7 +601,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -637,7 +637,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -672,7 +672,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -707,7 +707,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -742,7 +742,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -779,7 +779,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -809,7 +809,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -840,7 +840,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -875,7 +875,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -908,7 +908,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -939,7 +939,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -970,7 +970,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -1001,7 +1001,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',
@@ -1032,7 +1032,7 @@ describe('rules validator', function(){
                 // prepare
                 var rule = {
                     population: {
-                        tags: ['test']
+                        ids: ['test']
                     },
                     conditions: {
                         operator: 'OR',

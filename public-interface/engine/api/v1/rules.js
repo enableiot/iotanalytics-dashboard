@@ -57,21 +57,25 @@ var addRule = function (options, callback) {
                         if (!account) {
                             throw errBuilder.Errors.Account.NotFound;
                         }
-                        rule.externalId = rule.externalId || uuid.v4();
-                        rule.id = rule.id || rule.externalId ;
-                        var opt = {
-                            rule: rule,
-                            domainId: accountId,
-                            user: user,
-                            status: Rule.ruleStatus.active
-                        };
-                        return buildInternalRule(opt)
-                            .then(function(internalRule) {
-                                return Rule.addOrUpdateDraft(rule.externalId, accountId, internalRule).
-                                    then(function(rule){
-                                        callback(null, rule);
+                        return  Q.nfcall(validator.validateDevicesHasComponents, rule, accountId)
+                            .then(function(){
+                                rule.externalId = rule.externalId || uuid.v4();
+                                rule.id = rule.id || rule.externalId ;
+                                var opt = {
+                                    rule: rule,
+                                    domainId: accountId,
+                                    user: user,
+                                    status: Rule.ruleStatus.active
+                                };
+                                return buildInternalRule(opt)
+                                    .then(function(internalRule) {
+                                        return Rule.addOrUpdateDraft(rule.externalId, accountId, internalRule).
+                                            then(function(rule){
+                                                callback(null, rule);
+                                            });
                                     });
                             });
+
                     });
             })
             .then(function (result) {
@@ -228,24 +232,26 @@ var updateRule = function (options, callback) {
                         if (!user) {
                             throw errBuilder.Errors.User.NotFound;
                         }
-                        rule.externalId = externalId;
+                        return  Q.nfcall(validator.validateDevicesHasComponents, rule, accountId)
+                            .then(function(){
+                                rule.externalId = externalId;
 
-                        var opt = {
-                            externalRule: rule,
-                            rule: rule,
-                            domainId: accountId,
-                            user: user,
-                            status: rule.status
-                        };
+                                var opt = {
+                                    externalRule: rule,
+                                    rule: rule,
+                                    domainId: accountId,
+                                    user: user,
+                                    status: rule.status
+                                };
 
-                        opt.externalId = externalId;
-                        return buildInternalRule(opt)
-                            .then(function (internalRule) {
-                                return Rule.addOrUpdateDraft(rule.externalId, accountId, internalRule);
-                            }).catch(function () {
-                                throw errBuilder.Errors.Rule.InternalError.UpdatingError;
+                                opt.externalId = externalId;
+                                return buildInternalRule(opt)
+                                    .then(function (internalRule) {
+                                        return Rule.addOrUpdateDraft(rule.externalId, accountId, internalRule);
+                                    }).catch(function () {
+                                        throw errBuilder.Errors.Rule.InternalError.UpdatingError;
+                                    });
                             });
-
                     })
                     .then(function (res) {
                         callback(null, res);
