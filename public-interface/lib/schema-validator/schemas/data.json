@@ -1,0 +1,364 @@
+{
+    "POST": {
+        "type": "object",
+        "properties": {
+            "accountId": {
+                "type": "string",
+                "required": true
+            },
+            "on": {
+                "type": "number",
+                "required": true
+            },
+            "data": {
+                "type": "array",
+                "required": true,
+                "minItems": 1,
+                "maxItems": 1024,
+                "items": {
+                    "properties": {
+                        "componentId": {
+                            "type": "string",
+                            "required": true
+                        },
+                        "on": {
+                            "type": "number",
+                            "required": true
+                        },
+                        "loc": {
+                            "type": "array",
+                            "required": false,
+                            "minItems": 2,
+                            "maxItems": 3,
+                            "items": {
+                                "type" : "number"
+                            }
+                        },
+                        "value": {
+                            "type": "string",
+                            "required": true
+                        },
+                        "attributes": {
+                            "type":"object",
+                            "required": false
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            }
+        },
+        "additionalProperties": false
+    },
+    "SEARCH": {
+        "type": "object",
+        "properties": {
+            "from": {
+                "type": "number",
+                "required": false
+            },
+            "to": {
+                "type": "number",
+                "required": false
+            },
+            "maxItems": {
+                "type": "number",
+                "required": false
+            },
+            "targetFilter": {
+                "type":"object",
+                "required": true,
+                "properties": {
+                    "criteria": {
+                        "type": "object",
+                        "required": false,
+                        "properties": {
+                            "deviceId": {
+                                "type": "object",
+                                "required": false,
+                                "properties": {
+                                    "operator": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "value": {
+                                        "type": ["array", "string"],
+                                        "required": true
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "gatewayId": {
+                                "type": "object",
+                                "required": false,
+                                "properties": {
+                                    "operator": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "value": {
+                                        "type": ["array", "string"],
+                                        "required": true
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "name": {
+                                "type": "object",
+                                "required": false,
+                                "properties": {
+                                    "operator": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "value": {
+                                        "type": ["array", "string"],
+                                        "required": true
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "tags": {
+                                "type": "object",
+                                "required": false,
+                                "properties": {
+                                    "operator": {
+                                        "type": "string",
+                                        "required": true
+                                    },
+                                    "value": {
+                                        "type": ["array", "string","boolean"],
+                                        "required": true
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "attributes": {
+                                "type": "object",
+                                "required": false
+                            }
+                        }
+                    },
+                    "deviceList": {
+                        "type" : "array",
+                        "minItems" : 1,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "metrics": {
+                "type":"array",
+                "minItems": 1,
+                "required": true,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "required": true
+                        },
+                        "op": {
+                            "type": "string",
+                            "required": false
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "recipients": {
+                "type":"array",
+                "minItems": 1,
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "queryMeasureLocation": {
+                "type": "boolean",
+                "required": false
+            }
+        },
+        "additionalProperties": false
+    },
+    "SEARCH_ADVANCED": {
+        "type": "object",
+        "properties": {
+            "gatewayIds": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "deviceIds": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "componentIds": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "from": {
+                "type": "number",
+                "required": true
+            },
+            "to": {
+                "type": "number",
+                "required": false
+            },
+            "returnedMeasureAttributes": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "showMeasureLocation": {
+                "type": "boolean",
+                "required": false
+            },
+            "aggregations": {
+                "type":"string",
+                "required": false,
+                "enum": ["include", "exclude", "only"]
+            },
+            "devCompAttributeFilter": {
+                "type": "object",
+                "required": false
+            },
+            "measurementAttributeFilter": {
+                "type": "object",
+                "required": false
+            },
+            "valueFilter": {
+                "type": "object",
+                "required": false
+            },
+            "componentRowStart": {
+                "type": "number",
+                "required": false
+            },
+            "componentRowLimit": {
+                "type": "number",
+                "required": false
+            },
+            "countOnly": {
+                "type": "boolean",
+                "required": false
+            },
+            "sort": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "object"
+                }
+            }
+        },
+        "additionalProperties": false
+    },
+    "REPORT": {
+        "type": "object",
+        "properties": {
+            "from": {
+                "type": "number",
+                "required": true
+            },
+            "to": {
+                "type": "number",
+                "required": false
+            },
+            "aggregationMethods": {
+                "type":"array",
+                "required": false,
+                "items": {
+                    "type": "string",
+                    "enum": ["average", "min", "max", "std", "count", "sum"]
+                }
+            },
+            "dimensions": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "offset":  {
+                "type": "number",
+                "required": false
+            },
+            "limit":  {
+                "type": "number",
+                "required": false
+            },
+            "countOnly":  {
+                "type": "boolean",
+                "required": false
+            },
+            "outputType":  {
+                "type": "string",
+                "enum": ["json", "csv"],
+                "required": false
+            },
+            "deviceIds": {
+                "type":"array",
+                "minItems": 1,
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "gatewayIds": {
+                "type":"array",
+                "minItems": 1,
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "componentIds": {
+                "type":"array",
+                "minItems": 1,
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "sort": {
+                "type": "array",
+                "minItems": 1,
+                "required": false,
+                "items": {
+                    "type": "object"
+                }
+            },
+            "filters": {
+                "type":"object",
+                "required": false
+            }
+        },
+        "additionalProperties": false
+    },
+
+    "FIRST_LAST_MEASUREMENT": {
+        "type": "object",
+        "properties": {
+            "components": {
+                "type": "array",
+                "minItems": 1,
+                "required": true,
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "additionalProperties": false
+    }
+}

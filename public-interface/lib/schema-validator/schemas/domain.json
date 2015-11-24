@@ -1,0 +1,22 @@
+{
+    "POST": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "required": true
+            },
+            "additionalProperties": false
+        }
+    },
+    "PUT": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "required": true
+            },
+            "additionalProperties": false
+        }
+    }
+}

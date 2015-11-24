@@ -1,0 +1,29 @@
+{
+    "POST": {
+        "name":"addInvite",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "email": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "PUT": {
+        "name":"updateInviteStatus",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "accept": {
+                "type": "boolean",
+                "required": true
+            }
+        }
+    },
+    "DELETE": {
+        "name" : "deleteInvite",
+        "additionalProperties" : false,
+        "properties" : {}
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "SAMPLE_RATE_CHANGES": {
+        "name":"sampleRateChanges",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "from": {
+                "type": "number",
+                "required": false
+            },
+            "to": {
+                "type": "number",
+                "required": false
+            },
+            "deviceIds": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            },
+            "componentIds": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

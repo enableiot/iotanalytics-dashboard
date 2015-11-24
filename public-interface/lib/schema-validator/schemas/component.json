@@ -1,0 +1,232 @@
+{
+    "POST":{
+        "name": "component",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "dimension": {
+                "type": "string",
+                "pattern":"^[a-zA-Z0-9]*$",
+                "required": true
+            },
+            "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+$",
+                "required": true
+            },
+            "type": {
+                "type": "string",
+                "enum": ["sensor"],
+                "required": true
+            },
+            "dataType": {
+                "type": "string",
+                "enum": ["Number", "String", "Boolean", "ByteArray"],
+                "required": true
+            },
+            "format": {
+                "type": "string",
+                "required": true
+            },
+            "min": {
+                "type": "number",
+                "required": false
+            },
+            "max": {
+                "type": "number",
+                "required": false
+            },
+            "measureunit": {
+                "type": "string",
+                "required": true
+            },
+            "display": {
+                "type": "string",
+                "required": true
+            }
+        }
+    },
+    "POST_ACTUATOR":{
+        "name": "component",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "dimension": {
+                "type": "string",
+                "pattern":"^[a-zA-Z0-9]*$",
+                "required": true
+            },
+            "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+$",
+                "required": true
+            },
+            "type": {
+                "type": "string",
+                "enum": ["actuator"],
+                "required": true
+            },
+            "dataType": {
+                "type": "string",
+                "enum": ["Number", "String", "Boolean", "ByteArray"],
+                "required": true
+            },
+            "format": {
+                "type": "string",
+                "required": true
+            },
+            "min": {
+                "type": "number",
+                "required": false
+            },
+            "max": {
+                "type": "number",
+                "required": false
+            },
+            "measureunit": {
+                "type": "string",
+                "required": true
+            },
+            "display": {
+                "type": "string",
+                "required": true
+            },
+            "command": {
+                "type": "object",
+                "required": true,
+                "additionalProperties": false,
+                "properties": {
+                    "commandString": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "parameters": {
+                        "type": "array",
+                        "required": true,
+                        "minItems": 1,
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "name" : {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "values" : {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "display" : {
+                                    "type": "string",
+                                    "required": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "PUT_ACTUATOR":{
+        "name": "component",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "type": {
+                "type": "string",
+                "enum": ["actuator"],
+                "required": true
+            },
+            "dataType": {
+                "type": "string",
+                "enum": ["Number", "String", "Boolean", "ByteArray"],
+                "required": true
+            },
+            "format": {
+                "type": "string",
+                "required": true
+            },
+            "min": {
+                "type": "number",
+                "required": false
+            },
+            "max": {
+                "type": "number",
+                "required": false
+            },
+            "measureunit": {
+                "type": "string",
+                "required": true
+            },
+            "display": {
+                "type": "string",
+                "required": true
+            },
+            "command": {
+                "type": "object",
+                "required": true,
+                "additionalProperties": false,
+                "properties": {
+                    "commandString": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "parameters": {
+                        "type": "array",
+                        "required": true,
+                        "minItems": 1,
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "name" : {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "values" : {
+                                    "type": "string",
+                                    "required": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "PUT":{
+        "name": "component",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "type": {
+                "type": "string",
+                "enum": ["sensor", "actuator"],
+                "required": false
+            },
+            "dataType": {
+                "type": "string",
+                "enum": ["Number", "String", "Boolean", "ByteArray"],
+                "required": false
+            },
+            "format": {
+                "type": "string",
+                "required": false
+            },
+            "min": {
+                "type": "number",
+                "required": false
+            },
+            "max": {
+                "type": "number",
+                "required": false
+            },
+            "measureunit": {
+                "type": "string",
+                "required": false
+            },
+            "display": {
+                "type": "string",
+                "required": false
+            }
+        }
+    }
+}
