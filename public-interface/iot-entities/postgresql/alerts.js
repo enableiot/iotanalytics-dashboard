@@ -19,7 +19,8 @@ var interpreter = require('../../lib/interpreter/postgresInterpreter').alerts(),
     interpreterHelper = require('../../lib/interpreter/helper'),
     alerts = require('./models').alerts,
     statuses = {new: 'New', open: 'Open', closed: 'closed'},
-    resetTypes = {manual: "Manual", automatic: "Automatic"};
+    resetTypes = {manual: "Manual", automatic: "Automatic"},
+    alertComments = require('./models').alertComments;
 
 exports.status = statuses;
 exports.resetType = resetTypes;
@@ -77,7 +78,9 @@ exports.findByExternalId = function (accountId, alertId, callback) {
         where: {
             id: alertId,
             accountId: accountId
-        }
+        },
+        include: [{model: alertComments, as: 'Comments'}],
+        order: [[{model: alertComments, as: 'Comments'}, 'created', 'ASC']]
     };
 
     return alerts.find(filter)
@@ -119,16 +122,6 @@ exports.deleteAllByDomain = function (accountId) {
     return alerts.destroy(filter);
 };
 
-exports.addComments = function (options, callback) {
-    /*var domainId = options.accountId,
-     alertId = options.alertId,
-     comments = options.comments;
-
-     dbConn.alerts.update({do_id: domainId, a_id: alertId}, {$addToSet: {comments: {$each: comments}}}, {upsert: true, w:0});
-     */
-    if (callback) {
-        callback();
-    }
+exports.addComments = function (comments) {
+    return alertComments.bulkCreate(comments);
 };
-
-

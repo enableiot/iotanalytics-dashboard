@@ -33,6 +33,7 @@ var Sequelize = require('sequelize'),
     userInteractionTokens = require('./userInteractionTokens'),
     actuations = require('./actuations'),
     alerts = require('./alerts'),
+    alertComments = require('./alertComments'),
     connectionBindings = require('./connectionBindings'),
     purchasedLimits = require('./purchasedLimits'),
     deviceComponentMissingExportDays = require('./deviceComponentMissingExportDays'),
@@ -75,7 +76,7 @@ var UserInteractionTokens = new userInteractionTokens(sequelize, Sequelize);
 var Alerts = new alerts(sequelize, Sequelize);
 var ConnectionBindings = new connectionBindings(sequelize, Sequelize);
 var PurchasedLimits = new purchasedLimits(sequelize, Sequelize);
-
+var AlertComments = new alertComments(sequelize, Sequelize);
 
 Users.hasMany(Settings, {
     onDelete: 'CASCADE',
@@ -316,6 +317,7 @@ DeviceComponentMissingExportDays.belongsTo(DeviceComponents, {
 
 Accounts.belongsToMany(Users, {through: 'user_accounts'});
 Users.belongsToMany(Accounts, {through: 'user_accounts'});
+Alerts.hasMany(AlertComments, {as: 'Comments'});
 
 var executeSql = function (sql, transaction) {
     return sequelize.query(sql, {transaction: transaction});
@@ -378,5 +380,6 @@ module.exports.actuations = Actuations;
 module.exports.connectionBindings = ConnectionBindings;
 module.exports.purchasedLimits = PurchasedLimits;
 module.exports.deviceComponentMissingExportDays = DeviceComponentMissingExportDays;
+module.exports.alertComments = AlertComments;
 
 module.exports.sequelize = sequelize;

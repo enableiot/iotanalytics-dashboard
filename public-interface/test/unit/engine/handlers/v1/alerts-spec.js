@@ -65,7 +65,7 @@ describe('alerts handler', function() {
                     {
                         user: 'user1@test.com',
                         timestamp: Date.now(),
-                        text: 'comment1'
+                        text: 'comment2'
                     }
                 ],
                 apiMock = {
@@ -85,8 +85,9 @@ describe('alerts handler', function() {
             expect(apiMock.addComments.args[0].length).to.equal(2);
 
             var actual = apiMock.addComments.args[0][0];
-            expect(actual.alertId).to.equal(reqMock.params.alertId);
-            expect(actual.comments).to.equal(comments);
+            expect(actual.length).to.equal(2);
+            expect(actual[0]).to.eql({alertId: reqMock.params.alertId, text: 'comment1', user: 'user1@test.com'});
+            expect(actual[1]).to.eql({alertId: reqMock.params.alertId, text: 'comment2', user: 'user1@test.com'});
 
             done();
         });
@@ -102,7 +103,7 @@ describe('alerts handler', function() {
                     {
                         user: 'user1@test.com',
                         timestamp: Date.now(),
-                        text: 'comment1'
+                        text: 'comment2'
                     }
                 ],
                 error = new Error(errorCode),
@@ -123,8 +124,9 @@ describe('alerts handler', function() {
             expect(apiMock.addComments.calledOnce).to.equal(true);
 
             var actual = apiMock.addComments.args[0][0];
-            expect(actual.alertId).to.equal(reqMock.params.alertId);
-            expect(actual.comments).to.equal(comments);
+            expect(actual.length).to.equal(2);
+            expect(actual[0]).to.eql({alertId: reqMock.params.alertId, text: 'comment1', user: 'user1@test.com'});
+            expect(actual[1]).to.eql({alertId: reqMock.params.alertId, text: 'comment2', user: 'user1@test.com'});
 
             done();
         });

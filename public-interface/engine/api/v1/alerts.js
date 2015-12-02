@@ -213,21 +213,13 @@ exports.getAlert = function (params, resultCallback) {
     });
 };
 
-exports.addComments = function (options, callback) {
-    var accountId = options.accountId,
-        alertId = options.alertId;
-
-    Alert.findByExternalId(accountId, alertId, function (err, alert) {
-        if (!err && alert) {
-            Alert.addComments(options, function (err) {
-                if (!err) {
-                    callback();
-                } else {
-                    callback(errBuilder.build(errBuilder.Errors.Alert.SavingErrorComments));
-                }
-            });
-        } else {
-            callback(errBuilder.build(errBuilder.Errors.Alert.NotFound));
-        }
-    });
+exports.addComments = function (comments, callback) {
+    Alert.addComments(comments)
+        .then(function() {
+            callback();
+        })
+        .catch(function(err) {
+            logger.error('alerts. addComments, error: ' + err);
+            callback(errBuilder.build(errBuilder.Errors.Alert.SavingErrorComments));
+        });
 };

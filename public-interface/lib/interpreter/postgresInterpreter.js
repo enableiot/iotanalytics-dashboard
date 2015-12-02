@@ -526,12 +526,22 @@ var rulesInterpreter = function (lookUpTable, inverseLookUpTable) {
 };
 
 var alertsInterpreter = function (lookUpTable, inverseLookUpTable) {
+    var parseComments = function(entity) {
+        var comments = entity.Comments;
+        if(comments && Array.isArray(comments)) {
+            var i = 0;
+            for (i = 0; i < comments.length; i++ ) {
+                comments[i] = {text: comments[i].text, timestamp: comments[i].created, user: comments[i].user};
+            }
+        }
+    };
     return {
         toApp: function (entity) {
             var values = null;
             if (entity) {
                 values = entity.dataValues;
                 convertDatesToTimestamps(values);
+                parseComments(entity);
             }
             return helper.translate(inverseLookUpTable, values,  function (entity) {
                 if (entity) {
@@ -714,7 +724,8 @@ var alerts = function () {
         ruleName: 'ruleName',
         priority: 'priority',
         naturalLangAlert: 'naturalLangAlert',
-        conditions: 'conditions'
+        conditions: 'conditions',
+        comments: 'Comments'
     };
 
     return alertsInterpreter(lookUpTable, helper.inverse(lookUpTable));

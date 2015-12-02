@@ -108,13 +108,11 @@ exports.getAlert = function(req, res, next) {
 };
 
 exports.addComments = function(req, res, next) {
-    var options = {
-        accountId: req.params.accountId,
-        alertId: req.params.alertId,
-        comments: req.body
-    };
+    var comments = req.body.map(function(elem){
+        return {alertId: req.params.alertId, text: elem.text, user: elem.user};
+    });
 
-    alert.addComments(options, function(err){
+    alert.addComments(comments, function(err){
         if(!err){
             res.status(httpStatuses.OK.code).send();
         } else {
