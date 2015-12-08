@@ -449,6 +449,14 @@ iotController.controller('controlCtrl', function($scope,
         });
     };
 
+    $scope.deleteComplexCommand = function(id) {
+        return controlService.deleteAction(id, function() {
+           loadComplexCommands();
+        }, function() {
+            $scope.errors = [$scope.i18n.control.error_delete];
+        });
+    };
+
     $scope.send = function(action){
         sendActions([action], []);
     };

@@ -582,7 +582,8 @@
         "complexCommands": "Complex commands",
         "clear": "Clear",
         "selectComponent": "Select Component",
-        "transport": "Transport type"
+        "transport": "Transport type",
+        "error_delete": "Error deleting command"
     },
     "component": {
         "title": "Component Definition",

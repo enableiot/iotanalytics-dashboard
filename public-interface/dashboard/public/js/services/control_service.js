@@ -52,6 +52,17 @@ iotServices.factory('controlService', ['$http', 'sessionService', function($http
                     .success(successCallback)
                     .error(errorCallback);
             });
+        },
+        deleteAction: function (id, successCallback, errorCallback) {
+            return sessionService.addAccountIdPrefix('/control/commands/'+id)
+            .then(function(url) {
+                return $http({
+                    method: 'DELETE',
+                    url: url
+                })
+                    .success(successCallback)
+                    .error(errorCallback);
+            });
         }
     };
 }]);

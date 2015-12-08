@@ -22,14 +22,18 @@ limitations under the License.
                    ng-class="{'glyphicon-chevron-down': show.complexCommands, 'glyphicon-chevron-right': !show.complexCommands}"></i>
                 {{i18n.control.complexCommands}}
             </accordion-heading>
-            <button
-                    id="button-complex-{{command.id}}"
-                    ng-repeat="command in complexCommands"
-                    class="btn btn-default btn-sm btn-complex-command"
-                    ng-click="addComplexAction(command.id)">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                {{command.id}}
-            </button>
+            <div class="btn-toolbar">
+                <div class="btn-group role-group" ng-repeat="command in complexCommands">
+                    <button  class="btn btn-default btn-sm" ng-click="addComplexAction(command.id)">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        {{command.id}}
+                    </button>
+                    <button ng-click="deleteComplexCommand(command.id)"
+                        class="btn btn-default btn-sm btn-complex-command">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </div>
+            </div>
         </accordion-group>
     </accordion>
 </div>
