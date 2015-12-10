@@ -63,8 +63,10 @@ limitations under the License.
                 i18n.dashboard.period[dashboardConfig.data.messages.period].concat(' observations') : 'Last
                 observations'}}
             </h4>
-            <messages-counter ng-model="dataSummary">
-            </messages-counter>
+
+             <div class='uil-reload-css' ng-show="isLoadingDataSummary"><div class="glyphicon-refresh-animate"></div></div>
+
+            <messages-counter ng-model="dataSummary" ng-show="!isLoadingDataSummary"/>
         </div>
         <!-- DEVICE HEALTH -->
         <div class="box-panel mini-box healthy">

@@ -70,14 +70,22 @@ iotController.controller('HomeCtrl', function($scope,
     }, true);
 
     function getMessagesTotal(){
+
+
         if($scope.dashboardConfig && $scope.dashboardConfig.data && $scope.dashboardConfig.data.messages){
             if(sessionService.getCurrentAccount()) {
-                dataService.getTotal($scope.dashboardConfig.data.messages.period);
+                dataService.getTotal($scope.dashboardConfig.data.messages.period, hideloading);
             }
         }
     }
 
+    function hideloading(){
+        $scope.isLoadingDataSummary = false;
+
+    }
+
     $scope.$watch('dashboardConfig.data.messages.period', function(){
+        $scope.isLoadingDataSummary = true;
         $scope.dataSummary.total = 0;
         getMessagesTotal();
     });
