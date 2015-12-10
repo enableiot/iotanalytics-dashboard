@@ -404,6 +404,9 @@ exports.countByCriteria = function (criteria, queryParameters, resultCallback) {
 var findByComponentId = function (componentId, resultCallback) {
 
     var filter = {
+        include: [
+            {model: devices, as: 'device'}
+        ],
         where: {
             componentId: componentId
         }

@@ -18,6 +18,7 @@
 'use strict';
 
 var postgresProvider = require('../../../iot-entities/postgresql'),
+    Device = postgresProvider.devices,
     Alert = postgresProvider.alerts,
     Account = postgresProvider.accounts,
     apiRules = require('./rules'),
@@ -92,11 +93,11 @@ exports.changeStatus = function (params, resultCallback) {
     }
 };
 
-function toInternalAlert(accountId, externalAlert, rule) {
+function toInternalAlert(accountId, externalAlert, rule, deviceComponent) {
     var item = {};
     item.accountId = accountId;
     item.alertId = uuid.v4();
-    item.deviceId = externalAlert.deviceId;
+    item.deviceId = externalAlert.deviceId || deviceComponent.device.id;
     item.ruleId = rule.ruleId;
     item.ruleName = rule.name;
     item.priority = rule.priority;
@@ -108,7 +109,13 @@ function toInternalAlert(accountId, externalAlert, rule) {
         return {
             sequence: condition.conditionSequence,
             condition: rule.naturalLanguage,
-            components: condition.components
+            components: condition.components.map(function(component) {
+                return {
+                    "componentId": component.componentId,
+                    "componentName": component.componentName || deviceComponent.name,
+                    "valuePoints": component.valuePoints
+                };
+            })
         };
     });
 
@@ -132,6 +139,10 @@ function parseAlertResponse(data) {
     return results;
 }
 
+var findDeviceForAlert = function(alert, callback) {
+    Device.findByComponentId(alert.conditions[0].components[0].componentId, callback);
+};
+
 exports.trigger = function (alertData, accountId, hostUrl, resultCallback) {
 
     async.parallel(alertData.map(function (alert) {
@@ -144,40 +155,44 @@ exports.trigger = function (alertData, accountId, hostUrl, resultCallback) {
             };
             apiRules.getRule(options, function (err, rule) {
                 if (!err && rule) {
-                    //to internal from rule
-                    var internalAlert = toInternalAlert(accountId, alert, rule);
-                    internalAlert["externalId"] = rule.externalId;
-                    Alert.new(internalAlert, function(err){
-                        if (err) {
-                            logger.error('alerts. trigger, error: ' + JSON.stringify(err));
+                    findDeviceForAlert(alert, function(err, deviceComponent) {
+                        if (!err) {
+                            //to internal from rule
+                            var internalAlert = toInternalAlert(accountId, alert, rule, deviceComponent);
+                            internalAlert["externalId"] = rule.externalId;
+                            Alert.new(internalAlert, function(err){
+                                if (err) {
+                                    logger.error('alerts. trigger, error: ' + JSON.stringify(err));
+                                    alert.err = errBuilder.build(errBuilder.Errors.Alert.SavingErrorAA).asResponse();
+                                } else {
+                                    if(hostUrl.indexOf('internal-') > -1) {
+                                        internalAlert.host = hostUrl.substr(hostUrl.indexOf('-')+1);
+                                    }
+                                    else {
+                                        internalAlert.host = hostUrl;
+                                    }
 
-
-                                alert.err = errBuilder.build(errBuilder.Errors.Alert.SavingErrorAA).asResponse();
-
-
+                                    internalAlert.externalRule = rule;
+                                    actuationAlerts.addCommandsToActuationActions(accountId, rule)
+                                        .then(function onSuccess() {
+                                            actuationAlerts.saveAlertActuations(rule.actions, function (err) {
+                                                if (err) {
+                                                    logger.error('alerts.saveActuations - unable to add new actuation message into DB: ' + JSON.stringify(err));
+                                                }
+                                            });
+                                            process.emit("incoming_alert", {alert: internalAlert, rule: rule});
+                                        }, function onError(err) {
+                                            logger.error('alerts.getCommands, error: ' + JSON.stringify(err));
+                                        });
+                                }
+                                done(null, alert);
+                            });
                         } else {
-                            if(hostUrl.indexOf('internal-') > -1) {
-                                internalAlert.host = hostUrl.substr(hostUrl.indexOf('-')+1);
-                            }
-                            else {
-                                internalAlert.host = hostUrl;
-                            }
-
-                            internalAlert.externalRule = rule;
-                            actuationAlerts.addCommandsToActuationActions(accountId, rule)
-                                .then(function onSuccess() {
-                                    actuationAlerts.saveAlertActuations(rule.actions, function (err) {
-                                        if (err) {
-                                            logger.error('alerts.saveActuations - unable to add new actuation message into DB: ' + JSON.stringify(err));
-                                        }
-                                    });
-                                    process.emit("incoming_alert", {alert: internalAlert, rule: rule});
-                                }, function onError(err) {
-                                    logger.error('alerts.getCommands, error: ' + JSON.stringify(err));
-                                });
+                            logger.error('alerts. trigger, error: ' + JSON.stringify(err));
+                            alert.err = errBuilder.build(errBuilder.Errors.Alert.SavingErrorAA).asResponse();
                         }
-                        done(null, alert);
                     });
+
                 }
                 else {
                     alert.err = errBuilder.build(errBuilder.Errors.Alert.RuleNotFound).asResponse();

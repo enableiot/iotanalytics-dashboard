@@ -49,21 +49,23 @@ exports.findById = function (id, resultCallback) {
 exports.findByDeviceId = function (deviceId, limit, dateFilter, resultCallback) {
         var filter = {
             include: getActuationRelations(),
-            order: {
-                created: "DESC"
-            }
+            order:[['created','DESC']]
         };
         filter.include[0].include["where"] = {id: deviceId};
 
         if (dateFilter) {
-            filter["offset"] = dateFilter.from;
+            filter["where"] = {
+                created:{$gt:dateFilter.from}};
             filter["limit"] = limit;
 
         }
 
         return actuations.find(filter)
             .then(function (actuation) {
-                actuation = interpreter.toApp(actuation);
+                if(actuation){
+                    actuation = interpreter.toApp(actuation);
+                }
+
                 resultCallback(null, actuation);
             });
     };

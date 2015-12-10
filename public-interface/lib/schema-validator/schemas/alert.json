@@ -55,7 +55,7 @@
                         },
                         "deviceId": {
                             "type": "string",
-                            "required": true
+                            "required": false
                         },
                         "naturalLangAlert": {
                             "type": "string",
@@ -67,7 +67,7 @@
                         },
                         "conditions": {
                             "type": "array",
-                            "required": false,
+                            "required": true,
                             "minItems": 1,
                             "items": {
                                 "type" : "object",
@@ -95,7 +95,7 @@
                                                 },
                                                 "componentName": {
                                                     "type": "string",
-                                                    "required": true
+                                                    "required": false
                                                 },
                                                 "dataType": {
                                                     "type": "string",
