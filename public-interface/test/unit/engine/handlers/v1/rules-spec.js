@@ -216,9 +216,8 @@ describe('rules handler', function(){
             var rule = {
                     externalId: '1'
                 },
-                statusCode = 200,
                 apiMock = {
-                    updateRule: sinon.stub().callsArgWith(1, null, statusCode, rule)
+                    updateRule: sinon.stub().callsArgWith(1, null, rule)
                 };
 
             rulesHandler.__set__('rules', apiMock);

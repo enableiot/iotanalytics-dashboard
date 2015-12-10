@@ -49,7 +49,8 @@ describe('rules api', function(){
                     {
                         component: {
                             name: 'Temp Sensor 1',
-                            dataType: 'Number'
+                            dataType: 'Number',
+                            cid: 'component-12345'
                         },
                         type: 'Basic condition',
                         operator: 'Equal',
@@ -88,7 +89,8 @@ describe('rules api', function(){
             findUserWithAccountAndRule: sinon.stub().returns(Q.resolve({})),
             all: sinon.stub().returns(Q.resolve([rule])),
             update: sinon.stub().returns(Q.resolve(rule)),
-            deleteDraft: sinon.stub().returns(Q.resolve({deleted:true}))
+            deleteDraft: sinon.stub().returns(Q.resolve({deleted:true})),
+            findByStatus: sinon.stub()
         };
 
         accountMock = {
@@ -557,6 +559,28 @@ describe('rules api', function(){
                 .catch(function(err){
                     done(err);
                 });
+        });
+    });
+
+    describe('group by componentId', function() {
+        it('should group rules by componentId', function () {
+            //arrange
+            var rule_a = {name: 'rule_a', conditions: {values:[{component: {cid: 'compid_a'}}, {component: {cid: 'compid_b'}}, {component: {cid: 'compid_a'}}]}};
+            var rule_b = {name: 'rule_b', conditions: {values:[{component: {cid: 'compid_b'}}]}};
+            ruleMock.findByStatus.returns(Q.resolve([rule_a, rule_b]));
+
+            //execute
+            var result = rulesManager.groupByComponentId('active', callback);
+
+            //assert
+            return result.then(function() {
+                expect(callback.calledOnce).to.equal(true);
+                expect(callback.args[0].length).to.equal(2);
+                expect(callback.args[0][0]).to.equal(null);
+                var res = callback.args[0][1];
+                expect(res).to.have.length(2);
+                expect(res).to.eql([{componentId: 'compid_a', rules: [rule_a]}, {componentId: 'compid_b', rules: [rule_a, rule_b]}]);
+            });
         });
     });
 });

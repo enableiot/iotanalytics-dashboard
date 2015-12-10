@@ -119,6 +119,10 @@
                                             "type": [ "string", "null" ],
                                             "enum": ["Number", "String", "Boolean", "ByteArray"],
                                             "required": false
+                                        },
+                                        "cid": {
+                                            "type": [ "string", "null" ],
+                                            "required": false
                                         }
                                     }
                                 },
@@ -296,6 +300,10 @@
                                             "type": "string",
                                             "enum": ["Number", "String", "Boolean", "ByteArray"],
                                             "required": true
+                                        },
+                                        "cid": {
+                                            "type": [ "string", "null" ],
+                                            "required": false
                                         }
                                     }
                                 },
@@ -413,6 +421,18 @@
                     "type": "number",
                     "required": false
                 }
+            }
+        }
+    },
+    "STATUS": {
+        "name": "rule-status-all",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "status": {
+                "type": "string",
+                "enum": ["Active", "Archived", "On-hold", "Draft"],
+                "required": true
             }
         }
     }

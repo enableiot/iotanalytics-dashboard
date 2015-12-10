@@ -145,5 +145,6 @@ module.exports = [
     ["/recaptcha",                               verbs.POST,         "ui:public"                             ],
 
     ["/api/test/interactionToken",               verbs.POST,         "ui:public"                             ],
-    ["/google/captchakey",            verbs.GET,          "ui:public"                             ]
+    ["/google/captchakey",            verbs.GET,          "ui:public"                             ],
+    ["/api/components/rules",                       verbs.POST,         "rules:admin"                           ]
 ];

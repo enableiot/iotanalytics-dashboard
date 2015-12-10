@@ -123,6 +123,49 @@ var getRules = function (accountId, resultCallback) {
         });
 };
 
+function distinct(arr) {
+    return arr.filter(function(value, index, self) {
+        return self.indexOf(value) === index;
+    });
+}
+
+var groupByComponentId = function (status, resultCallback) {
+    var byCompId = {};
+    return Rule.findByStatus(status).then(function (allRules) {
+        //create a dict {component_id: [list of rules]}
+        allRules.forEach(function(rule) {
+            var compIds = rule.conditions.values.map(function (cond) {
+                return cond.component.cid;
+            });
+            compIds = distinct(compIds);
+            compIds.forEach(function (compId) {
+                if (compId === undefined) {
+                    return;
+                }
+                if (byCompId[compId] === undefined) {
+                    byCompId[compId] = [];
+                }
+                byCompId[compId].push(rule);
+            });
+        });
+        //create a list of objects with component ids and their rules
+        var result = [];
+        for (var compId in byCompId) {
+            result.push({componentId: compId, rules: byCompId[compId]});
+        }
+        resultCallback(null, result);
+    }).catch(function (err) {
+        var errMsg = errBuilder.build(errBuilder.Errors.Generic.InternalServerError);
+        if (err && err.code) {
+            errMsg = errBuilder.build(err);
+        }
+        resultCallback(errMsg);
+    });
+    //note: alternatively one can query json directly from postgres (including creating indexes), eg.:
+    //var q = "select json_array_elements(conditions->'values')->'component'->>'cid' as cid, * from dashboard.rules order by cid";
+    //this query returns a row for each pair of (component_id, one of its rules)
+};
+
 var isRuleStatusValid = function(status) {
     var rule_statuses = Object.keys(Rule.ruleStatus).map(function (key) {
         return Rule.ruleStatus[key];
@@ -348,5 +391,6 @@ module.exports = {
     addRuleAsDraft: addRuleAsDraft,
     deleteDraft: deleteDraft,
     getRulesByStatus: getRulesByStatus,
-    addRuleExecution: addRuleExecution
+    addRuleExecution: addRuleExecution,
+    groupByComponentId: groupByComponentId
 };

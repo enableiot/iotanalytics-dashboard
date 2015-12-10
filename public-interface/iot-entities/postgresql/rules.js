@@ -295,6 +295,17 @@ exports.all = function (accountId) {
         });
 };
 
+exports.findByStatus = function(status) {
+    var filter = {
+        where: {
+            status: status
+        }
+    };
+    return rules.findAll(filter).then(function(allRules) {
+        return interpreterHelper.mapAppResults(allRules, ruleInterpreter);
+    });
+};
+
 exports.findAccountWithRule = function (accountId, externalId) {
     var filter = {
         where : { 'id' : accountId},

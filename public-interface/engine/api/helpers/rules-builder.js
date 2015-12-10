@@ -31,7 +31,8 @@ var buildConditions = function (user, rule) {
             conditionSequence: i + 1,
             component: {
                 name: c.component.name,
-                dataType: c.component.dataType
+                dataType: c.component.dataType,
+                cid: c.component.cid
             },
             type: c.type,
             operator: c.operator,

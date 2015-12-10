@@ -82,9 +82,9 @@ var updateRule = function (req, res, next) {
         externalId: req.params.ruleId
     };
 
-    rules.updateRule(options, function(err, statusCode, savedRule){
+    rules.updateRule(options, function(err, savedRule){
         if (!err) {
-            res.status(statusCode).send(savedRule);
+            res.status(httpStatuses.OK.code).send(savedRule);
         } else {
             next(err);
         }
@@ -166,6 +166,17 @@ var cloneRule = function(req, res, next){
     });
 };
 
+var groupByComponentId = function(req, res, next) {
+    var status = req.body.status;
+    rules.groupByComponentId(status, function(err, result) {
+        if (!err) {
+            res.status(httpStatuses.OK.code).send(result);
+        } else {
+            next(err);
+        }
+    });
+};
+
 module.exports = {
     usage: usage,
     getRules: getRules,
@@ -177,5 +188,6 @@ module.exports = {
     addRuleAsDraft: addRuleAsDraft,
     deleteDraft: deleteDraft,
     getRulesByStatus: getRulesByStatus,
-    addRuleExecution: addRuleExecution
+    addRuleExecution: addRuleExecution,
+    groupByComponentId: groupByComponentId
 };

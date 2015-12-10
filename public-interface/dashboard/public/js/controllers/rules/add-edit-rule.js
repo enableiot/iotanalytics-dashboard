@@ -450,7 +450,8 @@ iotController.controller('AddEditRuleCtrl', function($scope,
 
             da.component = {
                 dataType: ob.catalog.dataType,
-                name: ob.component.name
+                name: ob.component.name,
+                cid: ob.component.cid
             };
 
             da.values = da.values.concat(ob.multiple.values);
@@ -615,6 +616,9 @@ iotController.controller('AddEditRuleCtrl', function($scope,
 
     function setCondtionOption() {
         var obj = $scope.rule.getCondition();
+
+  
+
         $scope.chosen.conditionOperator = getObjectKey(obj.operator,
                                                       $scope.conditionOperator, 'key');
         var length = obj.values.length;
@@ -634,15 +638,19 @@ iotController.controller('AddEditRuleCtrl', function($scope,
             $scope.firedSelectType(i);
 
             $scope.chosen.conditionSequence[i].operator = getObjectKey(o.operator, $scope.chosen.conditionSequence[i].conditionOperator, 'text');
-            if ($scope.chosen.conditionSequence[i].operator.key === 'bt' || $scope.chosen.conditionSequence[i].operator.key === 'nbt') {
-                $scope.chosen.conditionSequence[i].ifDoubleCondition = true;
-            }
 
-            if ((o.type === "basic" || o.type === "time") &&
-                ($scope.chosen.conditionSequence[i].operator.text === 'Equal' ||
+            if($scope.chosen.conditionSequence[i].operator != null) {
+                if ($scope.chosen.conditionSequence[i].operator.key === 'bt' || $scope.chosen.conditionSequence[i].operator.key === 'nbt') {
+                    $scope.chosen.conditionSequence[i].ifDoubleCondition = true;
+                }
+
+
+                if ((o.type === "basic" || o.type === "time") &&
+                    ($scope.chosen.conditionSequence[i].operator.text === 'Equal' ||
                     $scope.chosen.conditionSequence[i].operator.text === 'Not Equal')) {
-                $scope.chosen.conditionSequence[i].multiple.values = $scope.chosen.conditionSequence[i].values.splice(1);
-                $scope.chosen.conditionSequence[i].multiple.allow = true;
+                    $scope.chosen.conditionSequence[i].multiple.values = $scope.chosen.conditionSequence[i].values.splice(1);
+                    $scope.chosen.conditionSequence[i].multiple.allow = true;
+                }
             }
 
             if (o.type === "statistics") {
