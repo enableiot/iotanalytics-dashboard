@@ -24,6 +24,8 @@ UI and API repo. This repo will contain content external accessible.
 
 - Git
 
+- Cloud Foundry CLI and Trusted Analytics Platform account (https://github.com/trustedanalytics)
+
 #### Configuring NGINX
 
 Execute the following:
@@ -39,12 +41,6 @@ When using NGINX to access UI or API instead of using por 4001 you should port 8
 ##### Troubleshooting
 - If nginx is not working properly (not taking our configuration) empty the folder:
     - /etc/nginx/sites-enabled/
-
-#### Create Postgresql database
-Execute the following:
-
-        cd ./public-interface/deploy/postgres/
-        ./create_schema.sh <postgres_admin_user_name> <postgres_admin_password>
 
 
 ### Tests
@@ -71,7 +67,12 @@ All UI labels are defined in file - public-interface/dashboard/public/locale/res
         
 
 
-#### On Cloud Foundry
+#### On Trusted Analytics Platform (https://github.com/trustedanalytics)
+Before installation, make sure that you are logged into Trusted Analytics Platform with command:
+```
+cf login
+```
+
 1. Create instances with specified name for each of required services from marketplace:
     * PostgreSQL 9.3 or newer with name mypostgres
     * Logstash 1.4 or newer with name mylogstash
