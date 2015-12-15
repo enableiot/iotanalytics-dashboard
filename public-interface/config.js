@@ -174,8 +174,7 @@ var config = {
                 colorize: true,
                 prettyPrint: false,
                 timestamp: true,
-                exitOnError: false,
-                logstash: true
+                exitOnError: false
             }
         },
         "logLevel": "info", //Default verbosity,

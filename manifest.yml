@@ -14,7 +14,6 @@ applications:
   - installer-backend-ups
   - mail-ups
   - websocket-ups
-  - mylogstash
   - recaptcha-ups
   - myredis
   - rule-engine-credentials-ups

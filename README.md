@@ -75,7 +75,6 @@ cf login
 
 1. Create instances with specified name for each of required services from marketplace:
     * PostgreSQL 9.3 or newer with name mypostgres
-    * Logstash 1.4 or newer with name mylogstash
     * Redis 2.8 or newer with name myredis
     
 1. Create following user-provided services with properties filled with real values:
