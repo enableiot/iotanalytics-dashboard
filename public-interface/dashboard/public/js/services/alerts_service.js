@@ -26,6 +26,12 @@ iotServices.factory('alertsService', ['$http', 'utilityService','sessionService'
         unread: []
     };
 
+    var removeReadAlerts = function(data){
+        return data.filter(function(element) {
+            return element.status === "New";
+        });
+    };
+
     return {
         getUnreadAlerts: function(){
             sessionService.addAccountIdPrefix('/alerts?status=New')
@@ -52,7 +58,10 @@ iotServices.factory('alertsService', ['$http', 'utilityService','sessionService'
                     params: {
                         "_" : utilityService.timeStamp()
                     }
-                }).success(successCallback).error(errorCallback);
+                }).success(function(data) {
+                    summary.unread = removeReadAlerts(data);
+                }).success(successCallback)
+                  .error(errorCallback);
             });
         },
         getAlert: function(alertId, successCallback, errorCallback){
