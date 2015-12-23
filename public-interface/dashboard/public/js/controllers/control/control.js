@@ -77,24 +77,22 @@ iotController.controller('controlCtrl', function($scope,
 
                 if (device && device.components) {
                     device.components.forEach(function (component) {
-                        componentsService.getComponentDefinition(component.type, function (componentCatalogItem) {
-                            if (componentCatalogItem.type === "actuator" && componentCatalogItem.command) {
-                                var data = {
-                                    type: component.type,
-                                    name: component.name,
-                                    id: component.cid,
-                                    device: device.name,
-                                    catalog: componentCatalogItem
-                                };
 
-                                $scope.searchResult.components.push(data);
-                                var title = $scope.i18n.control.componentId + ": " + data.id + "<br/>";
-                                title = title + $scope.i18n.control.componentType + ": " + data.type + "<br/>";
-                                $scope.addTooltipToComponent(data.id, title);
-                            }
-                        }, function (data) {
-                            $scope.error = data.message || data;
-                        });
+                        if (component.componentType.type === "actuator" && component.componentType.command) {
+                            var data = {
+                                type: component.type,
+                                name: component.name,
+                                id: component.cid,
+                                device: device.name,
+                                catalog: component.componentType
+                            };
+
+                            $scope.searchResult.components.push(data);
+                            var title = $scope.i18n.control.componentId + ": " + data.id + "<br/>";
+                            title = title + $scope.i18n.control.componentType + ": " + data.type + "<br/>";
+                            $scope.addTooltipToComponent(data.id, title);
+                        }
+
                     });
                 }
             }

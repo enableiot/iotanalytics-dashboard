@@ -575,6 +575,7 @@ var actuationsInterpreter = function (lookUpTable, inverseLookUpTable) {
                     entity["accountId"] = entity.device_component.device.dataValues.accountId;
                     entity["deviceId"] = entity.device_component.device.dataValues.id;
                     entity["gatewayId"] = entity.device_component.device.dataValues.gatewayId;
+                    entity["parameters"] = JSON.parse(entity.parameters);
                     removesEmptyFields(entity);
                 }
                 return entity;

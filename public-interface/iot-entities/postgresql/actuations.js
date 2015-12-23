@@ -60,13 +60,12 @@ exports.findByDeviceId = function (deviceId, limit, dateFilter, resultCallback) 
 
         }
 
-        return actuations.find(filter)
-            .then(function (actuation) {
-                if(actuation){
-                    actuation = interpreter.toApp(actuation);
-                }
-
-                resultCallback(null, actuation);
+        return actuations.findAll(filter)
+            .then(function (actuations) {
+                actuations = actuations.map(function(actuation) {
+                    return interpreter.toApp(actuation);
+                });
+                resultCallback(null, actuations);
             });
     };
 
