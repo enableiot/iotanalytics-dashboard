@@ -208,8 +208,16 @@ h1, h2, h3, h4, h5, h5{
     width: 100%;
 }
 
-.sendBack {
+.alert-default{
     z-index: -1;
+    visibility: hidden;
+    bottom: 600px;
+    position: relative;
+}
+
+.sendFront {
+    z-index: 100;
+    visibility: visible;
 }
 
 .navbar-fixed-bottom {

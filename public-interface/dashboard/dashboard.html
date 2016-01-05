@@ -96,7 +96,7 @@ limitations under the License.
     <script src="public/lib/ng-i18n/ng-i18n-0.2.1.js"></script>
     <script src="public/lib/ngProgress/ngProgress.min.js"></script>
     <script src="public/lib/angular-wizard/angular-wizard.min.js"></script>
-    <script src="public/lib/angular-flash/angular-flash.min.js"></script>
+    <script src="public/lib/angular-flash/angular-flash.js"></script>
     <script src="public/lib/tour/intro.js"></script>
     <script src="public/lib/tour/angular-intro.js"></script>
     <script src="public/lib/node-uuid/uuid.js"></script>
@@ -263,15 +263,15 @@ limitations under the License.
 
         <div ng-view class="container" style="width:100%"></div>
 
-        <div class="navbar-fixed-bottom sendBack container">
-            <div class="container sendBack ">
-                <div id="alert-1" flash-alert active-class="in" class="alert fade" duration="6000">
-                    <button type="button" class="close" ng-click="hide()">&times;</button>
-                    <strong class="alert-heading">{{resBundle.alertTypes[flash.type]}} </strong>
-                    <span class="alert-message">{{flash.message}}</span>
-                </div>
-            </div>
+
+        <div id="alert-1" flash-alert active-class="in" class="alert fade alert-default dashboard-alert" duration="6000">
+            <button type="button" class="close" ng-click="hide()">&times;</button>
+            <strong class="alert-heading">{{resBundle.alertTypes[flash.type]}} </strong>
+            <span class="alert-message">{{flash.message}}</span>
         </div>
+
+
+
     </div>
 </div>
 </body>

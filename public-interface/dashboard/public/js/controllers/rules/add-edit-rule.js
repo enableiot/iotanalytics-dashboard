@@ -489,8 +489,8 @@ iotController.controller('AddEditRuleCtrl', function($scope,
         $scope.rule.setType(type);
     }
 
-    var buildComponentFormattedName = function(name, dataType){
-        return name + ' (' + dataType + ')';
+    var buildComponentFormattedName = function(name, dataType, deviceId){
+        return deviceId + ': ' + name + ' (' + dataType + ') ';
     };
 
     function prepareDevices () {
@@ -509,13 +509,9 @@ iotController.controller('AddEditRuleCtrl', function($scope,
             if($scope.filters.isDidChoose(device.deviceId) && device.components) {
                 device.components.forEach(function(c){
                     var catalog = getComponentDefinition(c.type);
-                    c.formattedName = buildComponentFormattedName(c.name, catalog.dataType);
+                    c.formattedName = buildComponentFormattedName(c.name, catalog.dataType, device.deviceId);
+                    $scope.components.push(c);
 
-                    if (!$scope.components.some(function(item){
-                        return item.formattedName === c.formattedName;
-                    })) {
-                        $scope.components.push(c);
-                    }
                 });
             }
         });
@@ -614,6 +610,8 @@ iotController.controller('AddEditRuleCtrl', function($scope,
         return -val;
     }
 
+
+
     function setCondtionOption() {
         var obj = $scope.rule.getCondition();
 
@@ -626,7 +624,7 @@ iotController.controller('AddEditRuleCtrl', function($scope,
 
         for (var i = 0; i < length ; ++i) {
             var o = obj.values[i];
-            $scope.chosen.conditionSequence[i].component = getObjectKey(buildComponentFormattedName(o.component.name, o.component.dataType), $scope.components, 'formattedName');
+            $scope.chosen.conditionSequence[i].component = getObjectKey(o.component.cid, $scope.components, 'cid');
             $scope.chosen.conditionSequence[i].catalog = new Catalog();
             if($scope.chosen.conditionSequence[i].component) {
                 $scope.chosen.conditionSequence[i].catalog.setData(getComponentDefinition($scope.chosen.conditionSequence[i].component.type));
@@ -643,7 +641,6 @@ iotController.controller('AddEditRuleCtrl', function($scope,
                 if ($scope.chosen.conditionSequence[i].operator.key === 'bt' || $scope.chosen.conditionSequence[i].operator.key === 'nbt') {
                     $scope.chosen.conditionSequence[i].ifDoubleCondition = true;
                 }
-
 
                 if ((o.type === "basic" || o.type === "time") &&
                     ($scope.chosen.conditionSequence[i].operator.text === 'Equal' ||

@@ -16,6 +16,7 @@
 
 'use strict';
 
+
 iotApp.directive('iotSearchDevices', function (devicesService, sessionService, $q, ngTableParams, $filter) {
 
     function link(scope) {
@@ -44,32 +45,50 @@ iotApp.directive('iotSearchDevices', function (devicesService, sessionService, $
 
 
 
-        function setToolTip() {
-            setTimeout(function () {
-                scope.searchResult.devices.forEach(function (device) {
-                    var title = scope.i18n.device.name + ": " + device.name + "<br/>";
-                    title = title + scope.i18n.device.gateway + ": " + device.gatewayId + "<br/>";
+        var BUTTON_LOADED_CHECK_INTERVAL = 500; //ms
+        scope.setTooltip = function(deviceId) {
 
-                    if (device.components && device.components.length > 0) {
-                        title = title + scope.i18n.device.components;
-                        title = title + ":<br/>";
-                        title = title + "<ul>";
+            //fetching the device to which tooltip belongs
+            var device = scope.searchResult.devices.find(function (element) {
+               return element.deviceId === deviceId;
+            });
 
-                        device.components.forEach(function (component) {
-                            title = title + "<li>" + component.type + "</li>";
-                        });
-                        title = title + "</ul>";
-                    } else {
-                        title = title + scope.i18n.device.noComponents;
-                    }
-                    $("#button" + device.deviceId).tooltip({
+            //constructing the info about device as a tooltip's content
+            var title = scope.i18n.device.name + ": " + device.name + "<br/>";
+            title = title + scope.i18n.device.gateway + ": " + device.gatewayId + "<br/>";
+
+            if (device.components && device.components.length > 0) {
+                title = title + scope.i18n.device.components;
+                title = title + ":<br/>";
+                title = title + "<ul>";
+
+                device.components.forEach(function (component) {
+                    title = title + "<li>" + component.type + "</li>";
+                });
+                title = title + "</ul>";
+            } else {
+                title = title + scope.i18n.device.noComponents;
+            }
+
+            /* using setInterval is necessary because devices buttons loads with delay in DOM (through ngRepeat)
+               and assigning the tooltip to selector fails if we would not wait for it
+            */
+            var intervalFunction = setInterval(function () {
+                var selector = $("#button" + deviceId);
+
+                if (selector.length > 0) {
+                    selector.tooltip({
                         placement: "bottom",
                         title: title,
                         html: true
                     });
-                });
-            }, 100);
-        }
+
+                    clearInterval(intervalFunction);
+                }
+            }, BUTTON_LOADED_CHECK_INTERVAL);
+
+        };
+
 
         function searchDevices() {
             // only used by rules
@@ -92,7 +111,6 @@ iotApp.directive('iotSearchDevices', function (devicesService, sessionService, $
                                 document.getElementById('chb_apply').setCustomValidity('');
                             }
 
-                            setToolTip();
                             scope.isLoading = false;
                         }, function () {
                             scope.searchResult.devices = [];

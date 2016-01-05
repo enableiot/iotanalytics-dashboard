@@ -150,7 +150,8 @@ limitations under the License.
                     <div href="" id="button{{device.deviceId}}" ng-repeat="device in searchResult.devices"
                          ng-if="$index < maxVisibleDevices()" class="btn btn-default btn-xs device-list-item"
                          ng-class="{active: filters.chart.devices[device.deviceId]}" data-toggle="tooltip"
-                         ng-disabled="chosen.applyForAll">
+                         ng-disabled="chosen.applyForAll"
+                         ng-init="setTooltip(device.deviceId)">
                         <label class="device-item-button">
                             <input type="checkbox" onclick='document.getElementById("selectAll").setCustomValidity("");'
                                    ng-model="filters.chart.devices[device.deviceId]"/><span>{{device.name}}</span>
