@@ -22,4 +22,11 @@ cd ../
 TARGET=(`cf t | grep "Space"`)
 SPACE=${TARGET[1]}
 
-cf push ${SPACE}-dashboard
+RETURN=($(cf push ${SPACE}-dashboard))
+
+if [ "$RETURN" = "FAILED" ]
+then
+	exit 1
+fi
+
+exit 0
