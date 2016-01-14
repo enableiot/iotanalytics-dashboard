@@ -90,6 +90,7 @@ describe('rules api', function(){
             all: sinon.stub().returns(Q.resolve([rule])),
             update: sinon.stub().returns(Q.resolve(rule)),
             deleteDraft: sinon.stub().returns(Q.resolve({deleted:true})),
+            deleteRule: sinon.stub().returns(Q.resolve({deleted:true})),
             findByStatus: sinon.stub()
         };
 
@@ -581,6 +582,45 @@ describe('rules api', function(){
                 expect(res).to.have.length(2);
                 expect(res).to.eql([{componentId: 'compid_a', rules: [rule_a]}, {componentId: 'compid_b', rules: [rule_a, rule_b]}]);
             });
+        });
+    });
+
+    describe('delete rule', function(){
+        it('should delete rule if everything is ok', function(done){
+            // execute
+            rulesManager.deleteRule({domain: domain, externalId: '1'}, callback)
+                .then(function(){
+                    // attest
+                    expect(callback.calledOnce).to.equal(true);
+                    expect(callback.args[0].length).to.equal(2);
+                    expect(callback.args[0][0]).to.equal(null);
+                    expect(callback.args[0][1].deleted).to.equal(true);
+                    expect(ruleMock.deleteRule.calledOnce).to.equal(true);
+
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                });
+        });
+
+        it('should call callback with Generic.InternalServerError error if something crashes', function(done){
+            //arrange
+            ruleMock.deleteRule.returns(Q.reject({}))
+            // execute
+            rulesManager.deleteRule({domain: domain, externalId: '1'}, callback)
+                .then(function(){
+                    // attest
+                    expect(callback.calledOnce).to.equal(true);
+                    expect(callback.args[0].length).to.equal(1);
+                    expect(callback.args[0][0].code).to.equal(errBuilder.Errors.Generic.InternalServerError.code);
+                    expect(ruleMock.deleteRule.calledOnce).to.equal(true);
+
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                });
         });
     });
 });

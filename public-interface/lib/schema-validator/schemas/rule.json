@@ -395,6 +395,11 @@
         "additionalProperties" : false,
         "properties" : {}
     },
+    "DELETE": {
+        "name" : "deleteRule",
+        "additionalProperties" : false,
+        "properties" : {}
+    },
     "CLONE_RULE": {
         "name" : "cloneExistingRule",
         "additionalProperties" : false,

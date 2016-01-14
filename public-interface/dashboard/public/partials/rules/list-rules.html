@@ -92,6 +92,12 @@ limitations under the License.
                        title="{{i18n.rules.confirmation.title[statuses.onhold]}}">
                         <span class="glyphicon glyphicon-minus-sign"></span>
                     </a>
+                    <!-- DELETE -->
+                    <a href="" ng-if="rule.status !== statuses.draft"
+                       ng-click="deleteRule(rule, statuses.delete)"
+                       title="{{i18n.rules.confirmation.title.Delete}}">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
 
                     <!-- DRAFT -->
                     <a href="" ng-if="rule.status === statuses.draft"

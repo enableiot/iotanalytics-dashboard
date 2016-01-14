@@ -89,6 +89,23 @@ var addRule = function (options, callback) {
     }
 };
 
+var deleteRule = function (options, callback) {
+    var accountId = options.domainId,
+        externalId = options.externalId;
+
+    return Rule.deleteRule(externalId, accountId)
+        .then(function (result) {
+            callback(null, result);
+        })
+        .catch(function (err) {
+            var errMsg = errBuilder.build(errBuilder.Errors.Generic.InternalServerError);
+            if (err && err.code) {
+                errMsg = errBuilder.build(err);
+            }
+            callback(errMsg);
+        });
+};
+
 var getRule = function (options, resultCallback) {
     var accountId = options.domainId,
         externalId = options.externalId;
@@ -390,6 +407,7 @@ module.exports = {
     updateRuleStatus: updateRuleStatus,
     addRuleAsDraft: addRuleAsDraft,
     deleteDraft: deleteDraft,
+    deleteRule: deleteRule,
     getRulesByStatus: getRulesByStatus,
     addRuleExecution: addRuleExecution,
     groupByComponentId: groupByComponentId

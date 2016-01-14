@@ -140,6 +140,7 @@ module.exports = {
                 GettingDraftedError: {code: 7556, status: 500, message: "Internal server error"} // error getting drafted rules
             },
             DeletionError: {code: 7557, status: 500, message: "Cannot delete draft rule"}, // error getting drafted rules
+            ActivatedRuleDeletionError: {code: 7558, status: 500, message: "Cannot delete rule"}, // error deleting rule
             CannotUseAPI: {code: 7600, status: 400, message: "Cannot use this API for updating a drafted rule"}, // error as developer tried to use this API for a drafted rule
             Validation : {
                 PopulationItemRequired: {code: 7710, status: 401, message:"At least one population item is required: name, ids, tags or attributes"},

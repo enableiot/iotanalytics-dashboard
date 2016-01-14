@@ -376,4 +376,42 @@ describe('rules handler', function(){
             done();
         });
     });
+
+    describe('delete rule', function(){
+        it('should delete a rule', function(done){
+            // prepare
+            var apiMock = {
+                deleteRule: sinon.stub().callsArgWith(1, null)
+            };
+
+            rulesHandler.__set__('rules', apiMock);
+
+            // execute
+            rulesHandler.deleteRule(reqMock, resMock);
+
+            // attest
+            expectResponseCode(204);
+
+            done();
+        });
+
+        it('should replies with an error if something crashes', function(done){
+            // prepare
+            var error = new Error(500),
+                apiMock = {
+                    deleteRule: sinon.stub().callsArgWith(1, error)
+                },
+                nextSpy = sinon.spy();
+
+            rulesHandler.__set__('rules', apiMock);
+
+            // execute
+            rulesHandler.deleteRule(reqMock, {}, nextSpy);
+
+            // attest
+            expect(nextSpy.calledWith(error)).to.equal(true);
+
+            done();
+        });
+    });
 });

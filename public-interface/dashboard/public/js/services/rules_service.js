@@ -82,6 +82,16 @@ iotServices.factory('rulesService', ['$http',
                 $http(options).success(successCallback).error(errorCallback);
             });
         },
+        deleteRule: function(ruleId, successCallback, errorCallback){
+            sessionService.addAccountIdPrefix('/rules/delete_rule_with_alerts/' + ruleId)
+                .then(function(url) {
+                    var options = {
+                        method: 'DELETE',
+                        url: url,
+                    };
+                    $http(options).success(successCallback).error(errorCallback);
+                });
+        },
         cloneExistingRule: function(ruleId, successCallback, errorCallback){
             sessionService.addAccountIdPrefix('/rules/clone/' + ruleId)
                 .then(function(url) {

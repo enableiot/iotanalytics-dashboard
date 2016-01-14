@@ -201,4 +201,53 @@ describe('rule service', function() {
             expect(errorCallback.args[0][1]).to.equal(error.code);
         });
     });
+
+    describe('delete rule', function(){
+        it('should call success callback if everything is ok', function(){
+            // prepare
+            var rule = {
+                    externalId: 1
+
+                },
+                successCallback = sinon.spy(),
+                errorCallback = sinon.spy();
+
+            httpBackend.expectDELETE('/accounts/' + accountId+'/rules/delete_rule_with_alerts/' + rule.externalId).respond(204);
+
+            // execute
+            rulesService.deleteRule(rule.externalId, successCallback, errorCallback);
+            httpBackend.flush();
+
+            // attest
+            expect(successCallback.calledOnce).to.equal(true);
+            expect(errorCallback.calledOnce).to.equal(false);
+            expect(successCallback.args[0].length).to.equal(4);
+            expect(successCallback.args[0][1]).to.equal(204);
+        });
+
+        it('should call callback with if something weird happens', function(){
+            // prepare
+            var error = {
+                    code: 500,
+                    message: 'internal server error'
+                },
+                rule = {
+                    externalId: 1
+                },
+                successCallback = sinon.spy(),
+                errorCallback = sinon.spy();
+
+            httpBackend.expectDELETE('/accounts/' + accountId+'/rules/delete_rule_with_alerts/' + rule.externalId).respond(error.code, error.message);
+
+            // execute
+            rulesService.deleteRule(rule.externalId, successCallback, errorCallback);
+            httpBackend.flush();
+
+            // attest
+            expect(successCallback.calledOnce).to.equal(false);
+            expect(errorCallback.calledOnce).to.equal(true);
+            expect(errorCallback.args[0].length).to.equal(4);
+            expect(errorCallback.args[0][1]).to.equal(error.code);
+        });
+    });
 });

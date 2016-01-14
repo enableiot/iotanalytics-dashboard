@@ -363,6 +363,7 @@
             "Draft": "Draft",
             "Active": "Active",
             "On-hold": "On-hold",
+            "Delete": "Delete",
             "Archived": "Archived"
         },
         "confirmation":{
@@ -370,12 +371,14 @@
                 "Active": "Activate",
                 "Archived": "Archive",
                 "On-hold": "Disable",
+                "Delete": "Delete",
                 "Draft": "Delete draft"
             },
             "text":{
                 "Active": "Are you sure you want to activate the rule '%RULENAME%'?",
                 "Archived": "Are you sure you want to archive the rule '%RULENAME%'?",
                 "On-hold": "Are you sure you want to disable the rule '%RULENAME%'?",
+                "Delete": "Are you sure you want to delete this rule '%RULENAME% with all assigned alerts'?",
                 "Draft": "Are you sure you want to delete this draft '%RULENAME%'?"
             }
         },
@@ -383,6 +386,7 @@
             "load": "Cannot load rules",
             "update": "Cannot change rule status",
             "deleteDraft": "Cannot delete draft rule",
+            "deleteRule": "Cannot delete rule",
             "apiRelated": {
                 "7551": "An error occurred when trying to push the rule to the rules engine. Try it again.",
                 "7401": "Please select at least one characteristic - name, tag or property.",
@@ -514,6 +518,7 @@
             "loadRules": "Cannot load rules",
             "updateRules": "Cannot change rule status",
             "deleteDraft": "Cannot delete draft rule",
+            "deleteRule": "Cannot delete rule",
             "cloneRule": "Cannot clone rule",
             "loadAll": "Cannot load alerts",
             "loadAlerts": "Cannot load alert",
@@ -734,6 +739,7 @@
             "GettingDraftedError":{"code": 7556, "status": 500, "message": "Internal server error"}
         },
         "DeletionError":{"code": 7557, "status": 500, "message": "Cannot delete draft rule"},
+        "ActivatedRuleDeletionError":{"code": 7558, "status": 500, "message": "Cannot delete rule"},
         "CannotUseAPI":{"code": 7600, "status": 400, "message": "Cannot use this API for updating a drafted rule"},
         "Validation ":{
         "PopulationItemRequired":{"code": 7710, "status": 401, "message":"At least one population item is required: name, ids, tags or attributes"},

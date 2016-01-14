@@ -200,6 +200,26 @@ exports.deleteDraft = function (externalId, accountId) {
         });
 };
 
+exports.deleteRule = function (externalId, accountId) {
+    var filter = {
+        where: {
+            accountId: accountId,
+            externalId: externalId,
+        }
+    };
+    return rules.destroy(filter)
+        .then(function (removedRulesCounter) {
+            if (removedRulesCounter > 0) {
+                return null;
+            } else {
+                throw errBuilder.Errors.Rule.NotFound;
+            }
+        })
+        .catch(function (err) {
+            throw err;
+        });
+};
+
 exports.allDrafted = function (accountId) {
     var filter = {
         where: {

@@ -74,6 +74,21 @@ var addRule = function (req, res, next) {
     });
 };
 
+var deleteRule = function(req, res, next){
+    var options = {
+        domainId: req.params.accountId,
+        externalId: req.params.ruleId
+    };
+
+    rules.deleteRule(options, function(err){
+        if (!err) {
+            res.status(httpStatuses.DeleteOK.code).send();
+        } else {
+            next(err);
+        }
+    });
+};
+
 var updateRule = function (req, res, next) {
     var options = {
         domainId: req.params.accountId,
@@ -187,6 +202,7 @@ module.exports = {
     updateRuleStatus: updateRuleStatus,
     addRuleAsDraft: addRuleAsDraft,
     deleteDraft: deleteDraft,
+    deleteRule: deleteRule,
     getRulesByStatus: getRulesByStatus,
     addRuleExecution: addRuleExecution,
     groupByComponentId: groupByComponentId

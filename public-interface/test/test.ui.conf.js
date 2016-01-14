@@ -41,7 +41,7 @@ module.exports = function(config) {
         'dashboard/public/js/services/*.js',
         'dashboard/public/lib/ng-table/ng-table.src.js',
         'dashboard/public/lib/ngProgress/ngProgress.min.js',
-        'dashboard/public/lib/angular-flash/angular-flash.min.js',
+        'dashboard/public/lib/angular-flash/angular-flash.js',
         'dashboard/public/lib/entropizer/entropizer.min.js',
         'test/ui/controllers/**/*.js',
         'test/ui/services/*.js',

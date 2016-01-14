@@ -28,6 +28,7 @@ module.exports = {
         app.put(VERSION + PATH + '/draft', schemaValidator.validateSchema(schemas.rule.DRAFT), rules.addRuleAsDraft);
         app.delete(VERSION + PATH + '/draft/:ruleId', schemaValidator.validateSchema(schemas.rule.DELETE_DRAFT), rules.deleteDraft);
         app.get(VERSION + PATH + '/:ruleId', rules.getRule);
+        app.delete(VERSION + PATH + '/delete_rule_with_alerts/:ruleId', schemaValidator.validateSchema(schemas.rule.DELETE), rules.deleteRule);
         app.post(VERSION + PATH, schemaValidator.validateSchema(schemas.rule.POST), rules.addRule);
         app.post(VERSION + PATH + '/clone/:ruleId', schemaValidator.validateSchema(schemas.rule.CLONE_RULE), rules.cloneRule);
         app.put(VERSION + PATH + '/:ruleId', schemaValidator.validateSchema(schemas.rule.POST) , rules.updateRule);

@@ -290,15 +290,17 @@ describe('list rules', function(){
         expect(defMock.resolve.calledOnce).to.equal(true);
         expect(defMock.resolve.args[0].length).to.equal(1);
         var actual = defMock.resolve.args[0][0];
-        expect(actual.length).to.equal(4);
+        expect(actual.length).to.equal(5);
         expect(actual[0].id).to.equal('Draft');
         expect(actual[0].title).to.equal('Draft');
-        expect(actual[1].id).to.equal('Active');
-        expect(actual[1].title).to.equal('Active');
-        expect(actual[2].id).to.equal('On-hold');
-        expect(actual[2].title).to.equal('On-hold');
-        expect(actual[3].id).to.equal('Archived');
-        expect(actual[3].title).to.equal('Archived');
+        expect(actual[1].id).to.equal('Delete');
+        expect(actual[1].title).to.equal('Delete');
+        expect(actual[2].id).to.equal('Active');
+        expect(actual[2].title).to.equal('Active');
+        expect(actual[3].id).to.equal('On-hold');
+        expect(actual[3].title).to.equal('On-hold');
+        expect(actual[4].id).to.equal('Archived');
+        expect(actual[4].title).to.equal('Archived');
     });
 
     it('should return priorities to filter with', function(){
@@ -417,6 +419,81 @@ describe('list rules', function(){
 
         // assert
         expect(rulesServiceMock.deleteDraft.calledOnce).to.equal(false);
+        expect(scope.tableRules.reload.calledOnce).to.equal(false);
+    });
+
+    it('should delete rule if user confirms the change', function(){
+        // prepare
+        var rule = {
+                externalId: 1
+            },
+            newStatus = 'Delete',
+            rulesServiceMock = {
+                deleteRule: sinon.stub().callsArgWith(1)
+            };
+
+        ctrl = controllerProvider('ListRulesCtrl', {
+            $scope: scope,
+            $rootScope: rootScope,
+            $location: location,
+            $filter:{},
+            $modal: new ModalMock(),
+            $q: {},
+            ngTableParams: ngTableParams,
+            rulesService: rulesServiceMock,
+            orderingService: {},
+            filteringService: {},
+            ngProgress: ngProgressStub,
+            utilityService: util,
+            sessionService: sessionServiceAPI
+        });
+
+        // execute
+        var modalInstance = scope.deleteRule(rule, newStatus);
+        var modalCtrl = new modalInstance.result.config.controller(scope, modalInstance, rule, newStatus);
+        scope.confirm();
+
+        // assert
+        expect(rulesServiceMock.deleteRule.calledOnce).to.equal(true);
+        expect(rulesServiceMock.deleteRule.args[0].length).to.equal(3);
+        expect(rulesServiceMock.deleteRule.args[0][0]).to.equal(rule.externalId);
+        expect(scope.tableRules.reload.calledOnce).to.equal(true);
+        expect(scope.error).to.be.null;
+    });
+
+    it('should not delete rule if user cancels the change', function(){
+        // prepare
+        var rule = {
+                externalId: 1
+            },
+            newStatus = 'Delete',
+            rulesServiceMock = {
+                deleteRule: sinon.stub().callsArgWith(2)
+            };
+
+        ctrl = controllerProvider('ListRulesCtrl', {
+            $scope: scope,
+            $rootScope: rootScope,
+            $location: location,
+            $filter:{},
+            $modal: new ModalMock(),
+            $q: {},
+            ngTableParams: ngTableParams,
+            rulesService: rulesServiceMock,
+            orderingService: {},
+            filteringService: {},
+            ngProgress: ngProgressStub,
+            utilityService: util,
+            sessionService: sessionServiceAPI
+        });
+
+        // execute
+        var modalInstance = scope.deleteRule(rule, newStatus);
+        var modalCtrl = new modalInstance.result.config.controller(scope, modalInstance, rule, newStatus);
+        scope.cancel();
+
+        // assert
+        expect(rulesServiceMock.deleteRule.calledOnce).to.equal(false);
         expect(scope.tableRules.reload.calledOnce).to.equal(false);
     });
 });

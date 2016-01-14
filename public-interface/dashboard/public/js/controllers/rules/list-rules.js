@@ -58,6 +58,7 @@ iotController.controller('ListRulesCtrl', function($scope,
     };
     $scope.statuses = {
         draft: 'Draft',
+        delete: 'Delete',
         active: 'Active',
         onhold: 'On-hold',
         archived: 'Archived'
@@ -182,6 +183,14 @@ iotController.controller('ListRulesCtrl', function($scope,
             $scope.tableRules.reload();
         }, function(){
             $scope.error = $rootScope.i18n.rules.errors.deleteDraft;
+        });
+    });
+
+    $scope.deleteRule = createModal(function(rule){
+        rulesService.deleteRule(rule.externalId, function(){
+            $scope.tableRules.reload();
+        }, function(){
+            $scope.error = $rootScope.i18n.rules.errors.deleteRule;
         });
     });
 
