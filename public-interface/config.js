@@ -68,7 +68,7 @@ var config = {
             googleUrl: 'http://www.google.com/recaptcha/api/verify',
             privateKey: reCaptcha_credentials.secretKey,
             publicKey: reCaptcha_credentials.siteKey,
-            enabled: true,
+            enabled: (reCaptcha_credentials.enabled !== "false"),
             testsCode: dashboard_security_credentials.captcha_test_code
         },
         gatewayUser: {
