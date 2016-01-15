@@ -108,21 +108,21 @@ var deleteRule = function (options, callback) {
 
 var getRule = function (options, resultCallback) {
     var accountId = options.domainId,
-        externalId = options.externalId;
+        externalId = options.externalId || options.ruleId;
 
     return Rule.findAccountWithRule(accountId, externalId)
         .then(function (results) {
             return results.rule;
         })
         .then(function (res) {
-            resultCallback(null, res);
+            return resultCallback(null, res);
         })
         .catch(function (err) {
             var errMsg = errBuilder.build(errBuilder.Errors.Generic.InternalServerError);
             if (err && err.code) {
                 errMsg = errBuilder.build(err);
             }
-            resultCallback(errMsg);
+            return resultCallback(errMsg);
         });
 };
 
@@ -386,10 +386,10 @@ var cloneRule = function (options, callback) {
     var accountId = options.domainId,
         userId = options.userId;
 
-    getRule(options, function (err, externalRule) {
+    return getRule(options, function (err, externalRule) {
         if (!err) {
             var obj = buildCloneRule(accountId, userId, externalRule);
-            addRule(obj, function (err, savedRule) {
+            return addRule(obj, function (err, savedRule) {
                 if (!err) {
                     callback(null, savedRule);
                 } else {

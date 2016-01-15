@@ -15,12 +15,14 @@
 #
 
 cd public-interface
-grunt build
-cd ../
+CURRENT_PATH=`pwd`
 
-
+GRUNT=${CURRENT_PATH}/node_modules/grunt-cli/bin/grunt
 TARGET=(`cf t | grep "Space"`)
 SPACE=${TARGET[1]}
+
+${GRUNT} build &&
+cd ../ &&
 
 RETURN=($(cf push ${SPACE}-dashboard))
 
@@ -30,3 +32,4 @@ then
 fi
 
 exit 0
+

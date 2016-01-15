@@ -23,7 +23,6 @@ var postgresProvider = require('../../iot-entities/postgresql'),
     entropy = require('../entropizer'),
     gatewayUser = require('../../config').auth.gatewayUser,
     ruleEngineUser = require('../../config').auth.ruleEngineUser,
-    aaBackendUser = require('../../config').auth.aaBackendUser,
     Q = require('q');
 
 function addUser(data) {
@@ -55,10 +54,6 @@ exports.create = function(){
         {
             password: ruleEngineUser.password,
             email: ruleEngineUser.email
-        },
-        {
-            password: aaBackendUser.password,
-            email: aaBackendUser.email
         }
     ];
 

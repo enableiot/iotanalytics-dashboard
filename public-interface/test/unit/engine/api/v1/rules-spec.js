@@ -19,7 +19,8 @@ var expect = require('expect.js'),
     rewire = require('rewire'),
     Q = require('q'),
     errBuilder = require('../../../../../lib/errorHandler').errBuilder,
-    rulesManager = rewire('../../../../../engine/api/v1/rules');
+    rulesManager = rewire('../../../../../engine/api/v1/rules'),
+    rulesValidator = rewire('../../../../../engine/api/helpers/rules-validator');
 
 describe('rules api', function(){
     var domain = {
@@ -41,7 +42,8 @@ describe('rules api', function(){
             priority: 'High',
             status: 'Active',
             population: {
-                tags: ['arg',  'jujuy']
+                tags: ['arg',  'jujuy'],
+                ids: [103]
             },
             conditions: {
                 operator: 'OR',
@@ -67,7 +69,10 @@ describe('rules api', function(){
                 }
             ]
         },
-        savedRule, userProxy, ruleMock, callback, accountMock;
+        device = {
+            components: [{name: 'Temp Sensor 1'}]
+        },
+        savedRule, userProxy, ruleMock, callback, accountMock, devicesMock;
 
     beforeEach(function(){
         savedRule = {};
@@ -98,11 +103,17 @@ describe('rules api', function(){
             find: sinon.stub().callsArgWith(1, null, account)
         };
 
+        devicesMock = {
+            getDevices: sinon.stub().callsArgWith(2, null, [device])
+        };
+
         callback = sinon.spy();
 
         rulesManager.__set__('User', userProxy);
         rulesManager.__set__('Rule', ruleMock);
         rulesManager.__set__('Account', accountMock);
+        rulesValidator.__set__('Device', devicesMock);
+        rulesManager.__set__('validator', new rulesValidator());
 
     });
 
@@ -281,7 +292,8 @@ describe('rules api', function(){
                 resetType: 'Automatic',
                 priority: 'High',
                 population: {
-                    tags: ['arg',  'jujuy']
+                    tags: ['arg',  'jujuy'],
+                    ids: ['test']
                 },
                 conditions: {
                     operator: 'OR',
@@ -631,6 +643,63 @@ describe('rules api', function(){
                     expect(callback.args[0].length).to.equal(1);
                     expect(callback.args[0][0].code).to.equal(errBuilder.Errors.Generic.InternalServerError.code);
                     expect(ruleMock.deleteRule.calledOnce).to.equal(true);
+
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                });
+        });
+    });
+
+    describe('clone rule', function(){
+        var externalId = "124";
+
+        it('should call callback with Generic.InternalServerError error if something crashes', function(done){
+            // execute
+            rulesManager.cloneRule({domainId: domain.id, userId: user.id, externalId: externalId}, callback)
+                .then(function(){
+                    // attest
+                    expect(ruleMock.findAccountWithRule.calledOnce).to.equal(true);
+                    expect(ruleMock.findAccountWithRule.calledWith(domain.id, externalId)).to.equal(true);
+                    expect(ruleMock.addOrUpdateDraft.calledOnce).to.equal(true);
+                    expect(callback.callCount).to.equal(2);
+
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                });
+        });
+
+        it('should clone rule if ruleId instead externalId in request is included', function(done){
+            // execute
+            rulesManager.cloneRule({domainId: domain.id, userId: user.id, ruleId: externalId}, callback)
+                .then(function(){
+                    // attest
+                    expect(ruleMock.findAccountWithRule.calledOnce).to.equal(true);
+                    expect(ruleMock.findAccountWithRule.calledWith(domain.id, externalId)).to.equal(true);
+                    expect(ruleMock.addOrUpdateDraft.calledOnce).to.equal(true);
+                    expect(callback.callCount).to.equal(2);
+
+                    done();
+                })
+                .catch(function(err){
+                    done(err);
+                });
+        });
+
+        it('should not clone rule if ruleId or externalId is not included', function(done){
+            //arrange
+            ruleMock.findAccountWithRule.returns(Q.reject({}))
+
+            // execute
+            rulesManager.cloneRule({domainId: domain.id, userId: user.id}, callback)
+                .then(function(){
+                    // attest
+                    expect(ruleMock.findAccountWithRule.calledOnce).to.equal(true);
+                    expect(ruleMock.addOrUpdateDraft.calledOnce).to.equal(false);
+                    expect(callback.callCount).to.equal(1);
 
                     done();
                 })

@@ -24,7 +24,6 @@ var cfenvReader = require('./lib/cfenv/reader'),
  reCaptcha_credentials = cfenvReader.getServiceCredentials("recaptcha-ups"),
  redis_credentials = cfenvReader.getServiceCredentials("myredis"),
  rule_engine_credentials = cfenvReader.getServiceCredentials("rule-engine-credentials-ups"),
- aa_backend_user_credentials = cfenvReader.getServiceCredentials("installer-backend-user-credentials-ups"),
  gateway_user_credentials = cfenvReader.getServiceCredentials("gateway-credentials-ups"),
  dashboard_security_credentials = cfenvReader.getServiceCredentials("dashboard-security-ups");
 
@@ -78,10 +77,6 @@ var config = {
         ruleEngineUser: {
             email: rule_engine_credentials.username,
             password: rule_engine_credentials.password
-        },
-        aaBackendUser: {
-            email: aa_backend_user_credentials.username,
-            password: aa_backend_user_credentials.password
         }
     },
     verifyUserEmail: true,

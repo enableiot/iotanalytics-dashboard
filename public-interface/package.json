@@ -15,10 +15,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/enableiot/iotkit-ui.git"
+    "url": "git://github.com/enableiot/iotanalytics-dashboard.git"
   },
-  "author": "Intel Corp",
-  "license": "BSD-2-Clause",
+  "author": "Intel Corporation",
+  "license": "Apache-2.0",
   "dependencies": {
     "async": "*",
     "cfenv": "^1.0.0",

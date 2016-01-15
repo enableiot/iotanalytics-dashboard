@@ -17,7 +17,6 @@ applications:
   - recaptcha-ups
   - myredis
   - rule-engine-credentials-ups
-  - installer-backend-user-credentials-ups
   - dashboard-security-ups
   - gateway-credentials-ups
 
