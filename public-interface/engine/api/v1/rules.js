@@ -216,6 +216,10 @@ var updateRule = function (options, callback) {
         externalId = options.externalId,
         validationErrors = validator.validate(rule);
 
+    if (rule.status !== Rule.ruleStatus.draft) {
+        callback(errBuilder.build(errBuilder.Errors.Rule.InternalError.SavingNonDraftError));
+    }
+
     if (validationErrors.length === 0) {
         return Rule.findUserWithAccountAndRule(userId, accountId, externalId)
             .then(function () {

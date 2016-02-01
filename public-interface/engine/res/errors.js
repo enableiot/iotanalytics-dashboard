@@ -137,6 +137,7 @@ module.exports = {
             InternalError: {
                 SavingError: {code: 7550, status: 500, message: "Error saving rule"},
                 UpdatingError: {code: 7553, status: 500, message: "Error updating rule"},
+                SavingNonDraftError: {code: 7554, status: 500, message: "Error saving rule. Saving rule other then draft is forbidden"},
                 GettingDraftedError: {code: 7556, status: 500, message: "Internal server error"} // error getting drafted rules
             },
             DeletionError: {code: 7557, status: 500, message: "Cannot delete draft rule"}, // error getting drafted rules

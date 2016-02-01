@@ -273,7 +273,7 @@ describe('rules api', function(){
         it('should call callback with new object if proxy replies a 201 http status', function(done){
             // prepare
             var newRule = {
-                status: ruleMock.ruleStatus.archived,
+                status: ruleMock.ruleStatus.draft,
                 accountId: domain.id,
                 name: 'test-rule1',
                 description: 'my first rule',
@@ -314,7 +314,7 @@ describe('rules api', function(){
                     expect(callback.calledWith(null, newRule)).to.equal(true);
                     expect(ruleMock.addOrUpdateDraft.calledOnce).to.equal(true);
                     expect(ruleMock.addOrUpdateDraft.args[0].length).to.equal(3);
-                    expect(ruleMock.addOrUpdateDraft.args[0][2].status).to.equal(ruleMock.ruleStatus.archived);
+                    expect(ruleMock.addOrUpdateDraft.args[0][2].status).to.equal(ruleMock.ruleStatus.draft);
                     done();
                 })
                 .catch(function(err){
@@ -322,9 +322,10 @@ describe('rules api', function(){
                 });
         });
 
-        it('should call callback with 7400 error if there is any validation error', function(done){
+        it('should call callback with InvalidData error if there is any validation error', function(done){
             // prepare
             rule.conditions.values[0].operator = "error_operator";
+            rule.status = 'draft'
             // execute
             rulesManager.updateRule({domain: domain, userId: user.id, rule: rule}, callback);
 
@@ -339,9 +340,24 @@ describe('rules api', function(){
             done();
         });
 
+        it('should call callback with SavingNonDraftError if rule has different status then draft', function(done){
+            // prepare
+            rule.status = 'Active';
+
+            // execute
+            rulesManager.updateRule({domain: domain, userId: user.id, rule: rule}, callback);
+
+            // attest
+            expect(callback.calledOnce).to.equal(true);
+            expect(callback.args[0][0].code).to.equal(errBuilder.Errors.Rule.InternalError.SavingNonDraftError.code);
+            expect(ruleMock.addOrUpdateDraft.calledOnce).to.equal(false);
+            done();
+        });
+
         it('should call callback with .InternalError.UpdatingError error if something goes wrong when updating rule', function(done){
             // prepare
             ruleMock.addOrUpdateDraft.returns(Q.reject());
+            rule.status = 'draft'
             // execute
             rulesManager.updateRule({domain: domain, userId: user.id, rule: rule}, callback)
                 .then(function(){

@@ -736,6 +736,7 @@
             "InternalError":{
             "SavingError":{"code": 7550, "status": 500, "message": "Internal server error"},
             "UpdatingError":{"code": 7553, "status": 500, "message": "Internal server error"},
+            "SavingNonDraftError":{"code": 7554, "status": 500, "message": "Error saving rule. Saving rule other then draft is forbidden"},
             "GettingDraftedError":{"code": 7556, "status": 500, "message": "Internal server error"}
         },
         "DeletionError":{"code": 7557, "status": 500, "message": "Cannot delete draft rule"},

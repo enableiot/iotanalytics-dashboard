@@ -68,16 +68,25 @@ iotServices.factory('Rule', ['$http', 'utilityService','sessionService',
         this.method = 'POST';
         this.data = data;
     }
-    function PutRule (data) {
+    /*function PutRule (data) {
         angular.copy(new RulesOptions(), this);
         this.url = this.url + data.externalId;
         this.method = 'PUT';
         this.data = data;
-    }
+    }*/
     function DeleteRuleDraft (data) {
         angular.copy(new RulesOptions(), this);
         this.url = this.url + "draft/" + data.id;
         this.method = 'DELETE';
+    }
+    function UpdateRuleStatus (data, status) {
+        angular.copy(new RulesOptions(), this);
+        this.url = this.url + data.externalId + "/status/";
+        this.method = 'PUT';
+        this.data = {
+            "status": status
+        };
+        delete this.params;
     }
     function request (options, callback, errCallback) {
         sessionService.addAccountIdPrefix(options.url)
@@ -224,14 +233,18 @@ iotServices.factory('Rule', ['$http', 'utilityService','sessionService',
             var me = this;
             me.prepareForSave(apply);
 
-            var opt;
-            if (me.isDraft()) {
-                opt = new PostRule(this);
-            } else {
-                opt = new PutRule(this);
+            var opt = new PostRule(this);
+
+            if (me.externalId) {
+                var params = new UpdateRuleStatus(this, 'Archived');
+                request(params, function(){}, me.errorCallback);
             }
 
             me.status = status;
+
+            if (!me.isDraft()) {
+                delete opt.data.externalId;
+            }
 
             request(opt, function(data){
                 me.setData(data);
