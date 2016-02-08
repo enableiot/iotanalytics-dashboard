@@ -75,6 +75,7 @@ exports.collectData = function (options, resultCallback) {
                         data.domainId = accountId;
                         data.gatewayId = foundDevice.gatewayId;
                         data.deviceId = deviceId;
+                        data.systemOn = Date.now();
 
                         var submitData = proxy.submitDataKafka;
                         if (config.drsProxy.ingestion === 'REST') {

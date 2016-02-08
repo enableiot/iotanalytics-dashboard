@@ -235,16 +235,13 @@ iotServices.factory('Rule', ['$http', 'utilityService','sessionService',
 
             var opt = new PostRule(this);
 
-            if (me.externalId) {
+            if (me.externalId && !me.isDraft()) {
                 var params = new UpdateRuleStatus(this, 'Archived');
                 request(params, function(){}, me.errorCallback);
+                delete opt.data.externalId;
             }
 
             me.status = status;
-
-            if (!me.isDraft()) {
-                delete opt.data.externalId;
-            }
 
             request(opt, function(data){
                 me.setData(data);

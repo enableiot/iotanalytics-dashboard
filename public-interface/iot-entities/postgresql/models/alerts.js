@@ -44,6 +44,14 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 allowNull: true
             },
+            dashboardAlertReceivedOn: {
+                type: DataTypes.DATE,
+                allowNull: true
+            },
+            dashboardObservationReceivedOn: {
+                type: DataTypes.DATE,
+                allowNull: true
+            },
             status: {
                 type: DataTypes.ENUM('New', 'Open', 'closed'),
                 allowNull: false

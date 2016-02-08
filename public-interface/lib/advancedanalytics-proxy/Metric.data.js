@@ -60,6 +60,7 @@ Metric.prototype.prepareDataIngestionMsg= function(msg) {
     this.accountId = msg.accountId || msg.domainId;
     this.did = msg.deviceId;
     this.on = msg.on || this.on;
+    this.systemOn = msg.systemOn;
     this.data = [];
     if (Array.isArray(msg.data)) {
         this.dataAsArray(msg);

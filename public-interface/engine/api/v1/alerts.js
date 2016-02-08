@@ -102,6 +102,8 @@ function toInternalAlert(accountId, externalAlert, rule, deviceComponent) {
     item.ruleName = rule.name;
     item.priority = rule.priority;
     item.triggered = externalAlert.timestamp;
+    item.dashboardObservationReceivedOn = externalAlert.systemOn;
+    item.dashboardAlertReceivedOn = Date.now();
     item.naturalLangAlert = rule.naturalLanguage;
     item.resetType = rule.resetType;
 

@@ -176,7 +176,11 @@ module.exports = {
                     LtNegativeValueExpected:{code: 7728, status: 401,message:'It is expected that for "<" or "<=" operators a negative value be sent when using Statistics Based Conditions'},
                     BaseLineMinimalInstancesRequired:{code: 7729, status: 401,message:"Statistics Based Conditions take baselineMinimalInstances parameter as required"},
                     BetweenPositiveValueExpected:{code: 7726, status: 401,message:'It is expected that for "Between" or "Not Between" operators a positive value be sent when using Statistics Based Conditions'}
-
+                },
+                DeviceComponents:{
+                    NotFound: {code: 7731, status: 404,message:"One device for rule has no components"},
+                    NotInDevice: {code: 7732, status: 404,message:"One of components is not in list of devices"},
+                    NotUsed: {code: 7730, status: 404, message: "One of devices is not used in the rule"}
                 }
             }
         },

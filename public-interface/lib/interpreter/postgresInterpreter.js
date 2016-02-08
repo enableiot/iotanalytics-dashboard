@@ -547,6 +547,8 @@ var alertsInterpreter = function (lookUpTable, inverseLookUpTable) {
                 if (entity) {
                     removesEmptyFields(entity);
                     entity.triggered = new Date(entity.triggered).getTime();
+                    entity.dashboardAlertReceivedOn = new Date(entity.dashboardAlertReceivedOn).getTime();
+                    entity.dashboardObservationReceivedOn = new Date(entity.dashboardObservationReceivedOn).getTime();
                 }
                 return entity;
             });
@@ -720,7 +722,12 @@ var alerts = function () {
         accountId: 'accountId',
         deviceId: 'deviceId',
         reset: 'reset',
+
+        // rule_engine received timestamp value
         triggered: 'triggered',
+        dashboardAlertReceivedOn: 'dashboardAlertReceivedOn',
+        dashboardObservationReceivedOn: 'dashboardObservationReceivedOn',
+
         status: 'status',
         ruleName: 'ruleName',
         priority: 'priority',
