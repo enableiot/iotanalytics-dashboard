@@ -141,7 +141,7 @@ function findDevices(accountId, targetFilter, resultCallback) {
     searchCriteria.domainId = {operator:"eq", value:accountId};
 
     DevicesAPI.findByCriteria(searchCriteria, {}, function(err, devices) {
-        resultCallback(null, devices);
+        resultCallback(err, devices);
     });
 }
 
@@ -183,9 +183,7 @@ exports.search = function(accountId, searchRequest, resultCallback) {
         if (!err) {
             AccountAPI.getAccount(accountId, function(e, foundAccount){
                 if (!e && foundAccount) {
-
-
-                    var componentList = [];
+                    var componentsWithDataType = {};
                     var deviceLookUp = {};
                     logger.debug("resolvedDevices: " + JSON.stringify(resolvedDevices));
                     var metricsArray = searchRequest.metrics.map(function(m) {
@@ -196,19 +194,19 @@ exports.search = function(accountId, searchRequest, resultCallback) {
                         if (target.components) {
                             target.components.forEach(function(component) {
                                 if (metricsArray.indexOf(component.cid) > -1) {
-                                    componentList.push(component.cid);
+                                    componentsWithDataType[component.cid] = {dataType: component.componentType.dataType};
                                     deviceLookUp[component.cid] = {id:target.deviceId, name: component.name, type: component.type, deviceName:target.name};
                                 }
                             });
                         }
                     });
 
-                    searchRequest.componentList = componentList;
+                    searchRequest.componentList = componentsWithDataType;
                     searchRequest.domainId = foundAccount.public_id;
                     searchRequest.from = searchRequest.from || 0;
                     delete searchRequest.targetFilter;
                     logger.debug("search Request: " + JSON.stringify(searchRequest));
-                    if (componentList.length > 0) {
+                    if (Object.keys(componentsWithDataType).length > 0) {
                         proxy.dataInquiry(searchRequest, function(err, result) {
                             if (!err) {
                                 var response = new DataInquiryResponse(result, deviceLookUp, searchRequest.queryMeasureLocation);
@@ -232,10 +230,76 @@ exports.search = function(accountId, searchRequest, resultCallback) {
     });
 };
 
-exports.searchAdvanced = function(accountId, searchRequest, resultCallback) {
-    AccountAPI.getAccount(accountId, function(e, foundAccount){
-        if(!e && foundAccount) {
-            searchRequest.domainId = foundAccount.public_id;
+var checkIfFiltersFulfilled = function (componentIds, componentTypes, componentNames, component) {
+    if (componentIds && componentIds.length > 0 && componentIds.indexOf(component.cid) < 0) {
+        return false;
+    } else if (componentTypes && componentTypes.length > 0 && componentTypes.indexOf(component.componentType.id) < 0) {
+        return false;
+    } else if (componentNames && componentNames.length > 0 && componentNames.indexOf(component.name) < 0) {
+        return false;
+    }
+    return true;
+};
+
+exports.searchAdvanced = function (accountId, searchRequest, resultCallback) {
+    var tags = [], deviceNames = [],componentTypes = [], componentNames = [];
+    if (searchRequest.devCompAttributeFilter) {
+        tags = searchRequest.devCompAttributeFilter.Tags ? searchRequest.devCompAttributeFilter.Tags : [];
+        deviceNames = searchRequest.devCompAttributeFilter.deviceName ? searchRequest.devCompAttributeFilter.deviceName : [];
+        componentTypes = searchRequest.devCompAttributeFilter.componentType ? searchRequest.devCompAttributeFilter.componentType : [];
+        componentNames = searchRequest.devCompAttributeFilter.componentName ? searchRequest.devCompAttributeFilter.componentName : [];
+    }
+
+    var filters = {
+        criteria: {
+            deviceId: {operator: "in", value: searchRequest.deviceIds ? searchRequest.deviceIds : []},
+            gatewayId: {operator: "in", value: searchRequest.gatewayIds ? searchRequest.gatewayIds : []},
+            name: {operator: "in", value: deviceNames},
+            // we use 'all' operator according to backward compatibility
+            tags: {operator: "all", value: tags},
+            status: {operator: "eq", value: "active"}
+        }
+    };
+
+    findDevices(accountId, filters, function (errFindDevices, resolvedDevices) {
+        var deviceData = [];
+        if (!errFindDevices) {
+            resolvedDevices.forEach(function (target) {
+                if (target.components) {
+                    var componentsWithDataType = [];
+                    target.components.forEach(function (component) {
+                        if (checkIfFiltersFulfilled(searchRequest.componentIds, componentTypes, componentNames, component)) {
+                            componentsWithDataType.push({
+                                componentId: component.cid,
+                                componentType: component.componentType.id,
+                                componentName: component.name,
+                                dataType: component.componentType.dataType
+                            });
+                        }
+                    });
+
+                    if (componentsWithDataType.length > 0) {
+                        deviceData.push({
+                            deviceId: target.deviceId,
+                            deviceName: target.name,
+                            accountId: accountId,
+                            tags: target.tags,
+                            components: componentsWithDataType
+                        });
+                    }
+                }
+            });
+        } else {
+            return resultCallback(errFindDevices, null);
+        }
+
+        if (deviceData.length > 0) {
+            searchRequest.deviceDataList = deviceData;
+            searchRequest.accountId = accountId;
+            delete searchRequest.deviceIds;
+            delete searchRequest.gatewayIds;
+            delete searchRequest.componentIds;
+            delete searchRequest.devCompAttributeFilter;
 
             proxy.dataInquiryAdvanced(searchRequest, function (err, result) {
                 if (!err) {
@@ -247,7 +311,90 @@ exports.searchAdvanced = function(accountId, searchRequest, resultCallback) {
                 }
             });
         } else {
-            resultCallback(e);
+            // we return empty response instead of error to keep backward compatibility
+            resultCallback(null, {data:[]});
+        }
+    });
+};
+
+
+var getFromDependingOnPeriod = function(period) {
+    var PERIOD_AS_SECONDS = {
+        'last_year':    -3600 * 24 * 365,
+        'last_month':   -3600 * 24 * 30,
+        'last_week':    -3600 * 24 * 7,
+        'last_day':     -3600 * 24,
+        'last_hour':    -3600,
+        'total':         0.0
+    };
+    if (PERIOD_AS_SECONDS[period]  === undefined) {
+        return PERIOD_AS_SECONDS.last_hour;
+    } else {
+        return PERIOD_AS_SECONDS[period];
+    }
+};
+
+exports.getTotals = function(accountId, period, resultCallback){
+    var filters = {
+        criteria: {
+            status: {operator: "eq", value: "active"}
+        }
+    };
+
+    findDevices(accountId, filters, function (errFindDevices, resolvedDevices) {
+        var deviceData = [];
+        if (!errFindDevices) {
+            resolvedDevices.forEach(function (target) {
+                if (target.components) {
+                    var componentsWithDataType = [];
+                    target.components.forEach(function (component) {
+                        componentsWithDataType.push({
+                            componentId: component.cid,
+                            componentType: component.componentType.id,
+                            componentName: component.name,
+                            dataType: component.componentType.dataType
+                        });
+
+                    });
+
+                    if (componentsWithDataType.length > 0) {
+                        deviceData.push({
+                            deviceId: target.deviceId,
+                            deviceName: target.name,
+                            accountId: accountId,
+                            tags: target.tags,
+                            components: componentsWithDataType
+                        });
+                    }
+                }
+            });
+        } else {
+            return resultCallback(errFindDevices, null);
+        }
+
+        if (deviceData.length > 0) {
+            var searchRequest = {
+                deviceDataList: deviceData,
+                from: getFromDependingOnPeriod(period),
+                countOnly: true,
+                accountId: accountId
+            };
+
+            proxy.dataInquiryAdvanced(searchRequest, function (err, result) {
+                if (!err) {
+                    var resp = {
+                        count: result.rowCount
+                    };
+                    resultCallback(null, resp);
+                } else if (result) {
+                    resultCallback(err, result);
+                } else {
+                    resultCallback(err, null);
+                }
+            });
+        } else {
+            // we return empty response instead of error to keep backward compatibility
+            resultCallback(null, {data:[]});
         }
     });
 };
@@ -269,11 +416,16 @@ exports.report = function(accountId, reportRequest, resultCallback) {
     });
 };
 
-exports.firstLastMeasurement = function(accountId, data, resultCallback) {
+exports.firstLastMeasurement = function (accountId, data, resultCallback) {
     data.domainId = accountId;
+    // validation for components - all of them should exist and be assigned to specific account
+    Component.getByCustomFilter(accountId, {componentIds: data.components}, function (errGetComponents, filteredComponents) {
+        if (!errGetComponents && filteredComponents && filteredComponents.length > 0) {
+            data.components = [];
+            filteredComponents.forEach(function (comp) {
+                data.components.push(comp.cid);
+            });
 
-    DevicesAPI.findByAccountIdAndComponentId(accountId, data.components, function(err, device) {
-        if(!err && device) {
             proxy.getFirstAndLastMeasurement(data, function (err, result) {
                 if (!err) {
                     resultCallback(null, result);
@@ -287,6 +439,7 @@ exports.firstLastMeasurement = function(accountId, data, resultCallback) {
             resultCallback(errBuilder.build(errBuilder.Errors.Device.Component.NotFound));
         }
     });
+
 };
 
 var writeSeriesToCsvLines = function (series) {
@@ -351,47 +504,4 @@ exports.sendByEmail = function(accountId, searchRequest, resultCallback) {
             }
         });
     }
-};
-
-var getFromDependingOnPeriod = function(period) {
-    var PERIOD_AS_SECONDS = {
-        'last_year':    -3600 * 24 * 365,
-        'last_month':   -3600 * 24 * 30,
-        'last_week':    -3600 * 24 * 7,
-        'last_day':     -3600 * 24,
-        'last_hour':    -3600,
-        'total':         0.0
-    };
-    if (PERIOD_AS_SECONDS[period]  === undefined) {
-        return PERIOD_AS_SECONDS.last_hour;
-    } else {
-        return PERIOD_AS_SECONDS[period];
-    }
-};
-
-exports.getTotals = function(accountId, period, resultCallback){
-    AccountAPI.getAccount(accountId, function(e, foundAccount){
-        if(!e && foundAccount) {
-            var searchRequest = {
-                from: getFromDependingOnPeriod(period),
-                countOnly: true
-            };
-            searchRequest.domainId = foundAccount.public_id;
-
-            proxy.dataInquiryAdvanced(searchRequest, function (err, result) {
-                if (!err) {
-                    var resp = {
-                        count: result.rowCount
-                    };
-                    resultCallback(null, resp);
-                } else if (result) {
-                    resultCallback(err, result);
-                } else {
-                    resultCallback(err, null);
-                }
-            });
-        } else {
-            resultCallback(e);
-        }
-    });
 };

@@ -305,7 +305,8 @@ var parseTagsQuery = function (tags, tableName) {
             var tagOperator = "=";
             switch (tags.operator) {
                 case ALL:
-                    tagOperator = "@>";
+                    // is contained by
+                    tagOperator = "<@";
                     break;
                 case EQ:
                     tagOperator = "=";
@@ -314,6 +315,7 @@ var parseTagsQuery = function (tags, tableName) {
                     tagOperator = "<>";
                     break;
                 case IN:
+                    // contains @>
                     tagOperator = "@>";
                     break;
                 case EXISTS:

@@ -36,7 +36,7 @@ var buildDIMessage = function(data) {
         "startDate": times.from,
         "endDate": times.to,
         "maxPoints": data.maxItems,
-        "components": data.componentList
+        "componentsWithDataType": data.componentList
     };
 };
 
@@ -215,14 +215,13 @@ module.exports = function(config) {
     };
     
     this.dataInquiryAdvanced = function(data, callback) {
-
-        var domainId = data.domainId;
-        delete data.domainId;
+        var accountId = data.accountId;
+        delete data.accountId;
 
         var advancedDataInquiryMessage = buildDIAMessage(data);
 
         var options = {
-            url: config.url + '/v1/accounts/' + domainId + '/dataInquiry/advanced',
+            url: config.url + '/v1/accounts/' + accountId + '/dataInquiry/advanced',
             method: 'POST',
             headers: {
                 'x-iotkit-requestid': contextProvider.get('requestid'),

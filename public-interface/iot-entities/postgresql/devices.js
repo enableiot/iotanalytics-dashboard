@@ -428,7 +428,7 @@ var findByComponentId = function (componentId, resultCallback) {
 
 exports.findByComponentId = findByComponentId;
 
-exports.findByAccountIdAndComponentId = function (accountId, componentId, resultCallback) {
+exports.findByAccountIdAndComponentId = function (accountId, componentIds, resultCallback) {
     var filter = {
         where: {
             accountId: accountId
@@ -436,7 +436,7 @@ exports.findByAccountIdAndComponentId = function (accountId, componentId, result
         include: [
             {
                 model: deviceComponents, as: 'deviceComponents',
-                where: { componentId: componentId },
+                where: { componentId: componentIds },
                 include: [
                     {
                         model: componentTypes

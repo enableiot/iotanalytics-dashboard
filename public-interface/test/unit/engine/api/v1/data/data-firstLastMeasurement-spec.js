@@ -26,11 +26,11 @@ var expect = require('expect.js'),
 describe('dataApi.firstLastMeasurement', function () {
     var accId,
         data,
-        deviceResponse,
+        componentResponse,
         result,
-        deviceMock,
         proxyMock,
         callback,
+        componentMock,
         error;
 
     beforeEach(function () {
@@ -42,20 +42,16 @@ describe('dataApi.firstLastMeasurement', function () {
         result = {
             data: []
         };
-        deviceResponse = {
-            deviceId: 'deviceId',
-            gatewayId: 'gatewayId',
-            healthTimePeriod: 10000
-        };
+        componentResponse = ["cid1", "cid2"];
 
         proxyMock = {
             getFirstAndLastMeasurement: sinon.stub().callsArgWith(1, null, result)
         };
-        deviceMock = {
-            findByAccountIdAndComponentId: sinon.stub().callsArgWith(2, null, deviceResponse)
+        componentMock = {
+            getByCustomFilter: sinon.stub().callsArgWith(2, null, componentResponse)
         };
 
-        dataManager.__set__('DevicesAPI', deviceMock);
+        dataManager.__set__('Component', componentMock);
         dataManager.__set__('proxy', proxyMock);
     });
 
@@ -69,7 +65,7 @@ describe('dataApi.firstLastMeasurement', function () {
         expect(callback.calledOnce).to.equal(true);
         expect(callback.getCall(0).args[0]).to.equal(null);
         expect(callback.getCall(0).args[1]).to.equal(result);
-        expect(deviceMock.findByAccountIdAndComponentId.calledOnce).to.equal(true);
+        expect(componentMock.getByCustomFilter.calledOnce).to.equal(true);
         expect(proxyMock.getFirstAndLastMeasurement.calledOnce).to.equal(true);
 
         done();
@@ -78,7 +74,7 @@ describe('dataApi.firstLastMeasurement', function () {
     it('should return error if ids not found', function (done) {
         // prepare
         error = errBuilder.build(errBuilder.Errors.Device.Component.NotFound);
-        deviceMock.findByAccountIdAndComponentId = sinon.stub().callsArgWith(2, error, null);
+        componentMock.getByCustomFilter = sinon.stub().callsArgWith(2, error, null);
 
         // execute
         dataManager.firstLastMeasurement(accId, data, callback);
@@ -101,7 +97,7 @@ describe('dataApi.firstLastMeasurement', function () {
         // attest
         expect(callback.calledOnce).to.equal(true);
         expect(callback.getCall(0).args[0]).to.equal(error);
-        expect(deviceMock.findByAccountIdAndComponentId.calledOnce).to.equal(true);
+        expect(componentMock.getByCustomFilter.calledOnce).to.equal(true);
         expect(proxyMock.getFirstAndLastMeasurement.calledOnce).to.equal(true);
 
         done();
@@ -118,7 +114,7 @@ describe('dataApi.firstLastMeasurement', function () {
         expect(callback.calledOnce).to.equal(true);
         expect(callback.getCall(0).args[0]).to.equal(error);
         expect(callback.getCall(0).args[1]).to.equal(result);
-        expect(deviceMock.findByAccountIdAndComponentId.calledOnce).to.equal(true);
+        expect(componentMock.getByCustomFilter.calledOnce).to.equal(true);
         expect(proxyMock.getFirstAndLastMeasurement.calledOnce).to.equal(true);
 
         done();

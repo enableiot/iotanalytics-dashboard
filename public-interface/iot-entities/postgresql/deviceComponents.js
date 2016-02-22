@@ -68,6 +68,11 @@ var filterByDeviceProperties = function (customFilter, filter) {
             $in: customFilter.gatewayIds
         };
     }
+    if (customFilter.deviceStatuses) {
+        filter.include[1].where.$and.status = {
+            $in: customFilter.deviceStatuses
+        };
+    }
     if (customFilter.deviceTags) {
         filter.include[1].include = [
             {
@@ -83,7 +88,8 @@ var filterByDeviceProperties = function (customFilter, filter) {
         ];
     }
 };
-var filterByComponentIds = function (customFilter, filter) {
+
+var filterByComponentProperties = function (customFilter, filter) {
     if (customFilter.componentIds) {
         filter.where = {
             componentId: {
@@ -91,10 +97,25 @@ var filterByComponentIds = function (customFilter, filter) {
             }
         };
     }
+    if (customFilter.componentTypes) {
+        filter.where = {
+            // id
+            componentTypeId: {
+                $in: customFilter.componentTypes
+            }
+        };
+    }
+    if (customFilter.componentNames) {
+        filter.where = {
+            name: {
+                $in: customFilter.componentNames
+            }
+        };
+    }
 };
 exports.getByCustomFilter = function(accountId, customFilter, resultCallback) {
     var filter = filterByAccountId(accountId);
-    filterByComponentIds(customFilter, filter);
+    filterByComponentProperties(customFilter, filter);
     filterByDeviceProperties(customFilter, filter);
 
     deviceComponents.all(filter)

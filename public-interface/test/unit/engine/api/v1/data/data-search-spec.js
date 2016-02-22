@@ -59,7 +59,10 @@ describe('dataApi.search', function () {
                     {
                         "cid": "436e7e74-1111-1111-9057-26932f5eb7e1",
                         "name": "Temperature Sensor 1",
-                        "type": "temperature.v1.0"
+                        "type": "temperature.v1.0",
+                        "componentType": {
+                            "dataType": "Number"
+                        }
                     }
                 ],
                 "deviceId": "testdevice01",

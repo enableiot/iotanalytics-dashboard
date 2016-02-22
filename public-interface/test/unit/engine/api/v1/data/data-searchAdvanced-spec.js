@@ -31,7 +31,7 @@ describe('dataAPi.searchAdvanced', function () {
         healthTimePeriod: 1
     };
 
-    var accountId, searchRequest, response;
+    var accountId, searchRequest, response, resolvedDevices;
     var deviceMock, accountAPIMock, proxyMock, callback, error;
 
     beforeEach(function () {
@@ -56,12 +56,38 @@ describe('dataAPi.searchAdvanced', function () {
             ]
         };
         response = { data: [] };
+        resolvedDevices = [
+            {
+                "_id": "535e646993ddc5db1492965b",
+                "cd": 1398695017173,
+                "components": [
+                    {
+                        "cid": "436e7e74-1111-1111-9057-26932f5eb7e1",
+                        "name": "Temperature Sensor 1",
+                        "type": "temperature.v1.0",
+                        "componentType": {
+                            "dataType": "Number"
+                        }
+                    }
+                ],
+                "deviceId": "testdevice01",
+                "do_id": "1",
+                "g_id": "00-21-CC-C4-2B-11",
+                "name": "Device 10",
+                "status": "active"
+            }
+        ];
         accountAPIMock = {
             getAccount: sinon.stub().callsArgWith(1, null, account)
         };
         proxyMock = {
             dataInquiryAdvanced: sinon.stub().callsArgWith(1, null, response)
         };
+        deviceMock = {
+            findByCriteria: sinon.stub().callsArgWith(2, null, resolvedDevices)
+        };
+
+
 
         dataManager.__set__('AccountAPI', accountAPIMock);
         dataManager.__set__('DevicesAPI', deviceMock);
@@ -77,7 +103,7 @@ describe('dataAPi.searchAdvanced', function () {
         expect(callback.calledOnce).to.equal(true);
         expect(callback.getCall(0).args[1]).to.equal(response);
         expect(proxyMock.dataInquiryAdvanced.calledOnce).to.equal(true);
-        expect(accountAPIMock.getAccount.calledOnce).to.equal(true);
+        expect(deviceMock.findByCriteria.calledOnce).to.equal(true);
 
         done();
     });
@@ -85,12 +111,13 @@ describe('dataAPi.searchAdvanced', function () {
     it('should return error if account not found', function (done) {
         // prepare
         error = errBuilder.Errors.Account.NotFound;
-        accountAPIMock.getAccount = sinon.stub().callsArgWith(1, error, null);
+        deviceMock.findByCriteria = sinon.stub().callsArgWith(2, error, null);
 
         // execute
         dataManager.searchAdvanced(accountId, searchRequest, callback);
 
         // attest
+        expect(deviceMock.findByCriteria.calledOnce).to.equal(true);
         expect(callback.calledOnce).to.equal(true);
         expect(callback.calledWith(error)).to.equal(true);
 
@@ -125,7 +152,7 @@ describe('dataAPi.searchAdvanced', function () {
         expect(callback.getCall(0).args[1]).to.equal(response);
         expect(callback.getCall(0).args[0]).to.equal(error);
         expect(proxyMock.dataInquiryAdvanced.calledOnce).to.equal(true);
-        expect(accountAPIMock.getAccount.calledOnce).to.equal(true);
+        expect(deviceMock.findByCriteria.calledOnce).to.equal(true);
 
         done();
     });

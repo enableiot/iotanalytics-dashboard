@@ -237,6 +237,12 @@ var iotAppLogin = angular.module('iotAppLogin', ['iotController',
                 controller: 'ForgotCtrl'
             }
         );
+        $routeProvider.when('/reverification',
+            {
+                templateUrl: 'public/partials/auth/reverification.html',
+                controller: 'LoginCtrl'
+            }
+        );
         $routeProvider.when('/resetPassword',
             {
                 templateUrl: 'public/partials/auth/changePassword.html',
