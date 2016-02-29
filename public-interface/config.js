@@ -19,7 +19,8 @@
 var cfenvReader = require('./lib/cfenv/reader'),
  postgres_credentials = cfenvReader.getServiceCredentials("mypostgres"),
  aa_backend_credentials = cfenvReader.getServiceCredentials("installer-backend-ups"),
- mail_credentials = cfenvReader.getServiceCredentials("mail-ups"),
+ mail_credentials = cfenvReader.getServiceCredentials("mysmtp"),
+ mail_user_credentials = cfenvReader.getServiceCredentials("mail-ups"),
  websocket_credentials = cfenvReader.getServiceCredentials('websocket-ups'),
  reCaptcha_credentials = cfenvReader.getServiceCredentials("recaptcha-ups"),
  redis_credentials = cfenvReader.getServiceCredentials("myredis"),
@@ -101,16 +102,16 @@ var config = {
         }
     },
     mail:{
-        from: 'IoT Analytics <' + mail_credentials.sender + '>',
+        from: 'IoT Analytics <' + mail_user_credentials.sender + '>',
         smtp: {
             transport: "SMTP",
             host: mail_credentials.host,
-            secureConnection: mail_credentials.secureConnection,
+            secureConnection: (mail_credentials.protocol === 'smtps'),
             port: mail_credentials.port,
             requiresAuth: true,
             auth: {
-                user: mail_credentials.user,
-                pass: mail_credentials.pass
+                user: mail_credentials.username,
+                pass: mail_credentials.password
             },
             tls:{
                 secureProtocol: "TLSv1_method"

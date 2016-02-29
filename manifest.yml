@@ -12,6 +12,7 @@ applications:
   services:
   - mypostgres
   - installer-backend-ups
+  - mysmtp
   - mail-ups
   - websocket-ups
   - recaptcha-ups
