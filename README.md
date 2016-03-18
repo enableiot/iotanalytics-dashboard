@@ -76,14 +76,15 @@ cf login
 1. Create instances with specified name for each of required services from marketplace:
     * PostgreSQL 9.3 or newer with name mypostgres
     * Redis 2.8 or newer with name myredis
+    * Smtp service with name mysmtp
     
 1. Create following user-provided services with properties filled with real values:
 
         cf cups dashboard-endpoint-ups -p "{\"host\":\"${ADDRESS}\"}"
-        cf cups backend-ups -p "{\"host\":\"${ADDRESS}\",\"deviceMeasurementTableName\":\"${DEVICE_MEASUREMENT_TABLE}\"}"
+        cf cups backend-ups -p "{\"host\":\"${ADDRESS}\"}"
         cf cups websocket-ups -p "{\"username\":\"${USER}\",\"password\":\"${PASSWORD}\"}"
         cf cups rule-engine-credentials-ups -p "{\"username\":\"${USER}\",\"password\":\"${PASSWORD}\"}"
-        cf cups mail-ups -p "{\"host\":\"${HOST}\",\"port\":${PORT},\"secureConnection\":${IS_SECURE},\"user\":\"${USER}\",\"pass\":\"${PASSWORD}\",\"sender\":\"${SENDER}\"}"
+        cf cups mail-ups -p "{\"sender\":\"${SENDER}\"}"
         cf cups recaptcha-ups -p "{\"siteKey\":\"${SITE_KEY}\",\"secretKey\":\"${SECRET_KEY}\"}"
         cf cups dashboard-security-ups -p "{\"private_pem_path\":${PRIVATE_PEM_PATH},\"public_pem_path\":${PUBLIC_PEM_PATH},\"captcha_test_code\":${CAPTCHA_TEST_CODE},\"interaction_token_permision_key\":${INTERACTION_TOKEN_PERMISSION_KEY}}"
         cf cups gateway-credentials-ups -p "{\"username\":\"${USER}\",\"password\":\"${PASSWORD}\"}"
