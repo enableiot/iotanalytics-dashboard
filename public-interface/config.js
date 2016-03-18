@@ -18,7 +18,7 @@
 
 var cfenvReader = require('./lib/cfenv/reader'),
  postgres_credentials = cfenvReader.getServiceCredentials("mypostgres"),
- aa_backend_credentials = cfenvReader.getServiceCredentials("installer-backend-ups"),
+ backend_credentials = cfenvReader.getServiceCredentials("backend-ups"),
  mail_credentials = cfenvReader.getServiceCredentials("mysmtp"),
  mail_user_credentials = cfenvReader.getServiceCredentials("mail-ups"),
  websocket_credentials = cfenvReader.getServiceCredentials('websocket-ups'),
@@ -121,8 +121,8 @@ var config = {
         blockedDomains: [ "@example.com", "@test.com" ]
     },
     drsProxy: {
-        url: aa_backend_credentials.host,
-        dataUrl: aa_backend_credentials.host,
+        url: backend_credentials.host,
+        dataUrl: backend_credentials.host,
         strictSsl: false,
         mqtt: {
             host: '',
