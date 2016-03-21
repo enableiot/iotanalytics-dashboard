@@ -21,8 +21,8 @@ export INSTALL_DIR="/opt/dashboard/iotkit-dashboard/dashboard/"
 
 # create symbolic link to nginx config file
 sudo rm -f /etc/nginx/conf.d/default.conf
-sudo ln -s "${BASE_DIR}/default.conf" /etc/nginx/conf.d/default.conf
-echo "symbolic link to nging/default.conf created"
+sudo cp "${BASE_DIR}/default.conf" /etc/nginx/conf.d/
+echo "default.conf installed"
 
 # create symbolic link to dashboard/public to make nginx serves as CDN
 sudo mkdir -p "${INSTALL_DIR}"

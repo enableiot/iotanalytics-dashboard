@@ -34,7 +34,7 @@ cd ./dashboard/public-interface/nginx
 ./install.sh
 ```
 
-This script creates a sym link from /nginx/default.conf to /etc/nginx/conf.d/default.conf to activate configuration. Then it creates another sym link from /dashboard/public-interface/dashboard/public to /opt/dashboard/iotkit-dashboard/dashboard/public to make NGINX serves static resources as CDN. Finally it will restart nginx and make some curls for testing that everything is ok.
+This script overwrites /nginx/default.conf by /etc/nginx/conf.d/default.conf to activate configuration. Then it creates sym link from /dashboard/public-interface/dashboard/public to /opt/dashboard/iotkit-dashboard/dashboard/public to make NGINX serves static resources as CDN. Finally it will restart nginx and make some curls for testing that everything is ok.
 
 When using NGINX to access UI or API instead of using por 4001 you should port 80.
 
