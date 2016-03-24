@@ -100,10 +100,10 @@ module.exports = function (grunt) {
                     print: 'detail',
                     coverage: true,
                     check: {
-                        statements: 52,
-                        branches: 41,
-                        functions: 46,
-                        lines: 52
+                        statements: 82,
+                        branches: 71,
+                        functions: 80,
+                        lines: 82
                     }
                 }
             },
@@ -136,10 +136,10 @@ module.exports = function (grunt) {
                     reportFormats: ['lcov'],
                     print: 'detail',
                     check: {
-                        statements: 52,
-                        branches: 41,
-                        functions: 46,
-                        lines: 52
+                        statements: 82,
+                        branches: 71,
+                        functions: 80,
+                        lines: 82
                     }
                 }
             }

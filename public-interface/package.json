@@ -77,7 +77,7 @@
     "grunt-istanbul": "^0.2.5",
     "grunt-karma": "^0.8.2",
     "grunt-mocha": "~0.4.10",
-    "grunt-mocha-istanbul": "^1.4.0",
+    "grunt-mocha-istanbul": "^3.0.1",
     "grunt-simple-mocha": "~0.4.0",
     "grunt-usemin": "~2.2.0",
     "istanbul": "^0.2.7",
