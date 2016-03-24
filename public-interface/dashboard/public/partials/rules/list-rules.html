@@ -93,9 +93,9 @@ limitations under the License.
                         <span class="glyphicon glyphicon-minus-sign"></span>
                     </a>
                     <!-- DELETE -->
-                    <a href="" ng-if="rule.status !== statuses.draft"
-                       ng-click="deleteRule(rule, statuses.delete)"
-                       title="{{i18n.rules.confirmation.title.Delete}}">
+                    <a href="" ng-if="rule.status !== statuses.draft && rule.status !== statuses.deleted"
+                       ng-click="deleteRule(rule, statuses.deleted)"
+                       title="{{i18n.rules.confirmation.title.Deleted}}">
                         <span class="glyphicon glyphicon-trash"></span>
                     </a>
 

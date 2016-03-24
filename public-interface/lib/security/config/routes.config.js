@@ -146,5 +146,7 @@ module.exports = [
 
     ["/api/test/interactionToken",               verbs.POST,         "ui:public"                             ],
     ["/google/captchakey",            verbs.GET,          "ui:public"                             ],
-    ["/api/components/rules",                       verbs.POST,         "rules:admin"                           ]
+    ["/api/components/rules",                     verbs.POST,         "rules:admin"                           ],
+    ["/api/rules/synchronization_status/.*",                verbs.PUT,          "rules:admin"           ]
+
 ];

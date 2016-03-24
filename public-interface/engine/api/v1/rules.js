@@ -97,7 +97,12 @@ var deleteRule = function (options, callback) {
     var accountId = options.domainId,
         externalId = options.externalId;
 
-    return Rule.deleteRule(externalId, accountId)
+    var deletedRuleData = {
+        status: Rule.ruleStatus.deleted,
+        synchronizationStatus: Rule.ruleSynchronizationStatus.notsynchronized
+    };
+
+    return Rule.update(externalId, accountId, deletedRuleData)
         .then(function (result) {
             callback(null, result);
         })
@@ -150,9 +155,9 @@ function distinct(arr) {
     });
 }
 
-var groupByComponentId = function (status, resultCallback) {
+var groupByComponentId = function (status, synchronizationStatus, resultCallback) {
     var byCompId = {};
-    return Rule.findByStatus(status).then(function (allRules) {
+    return Rule.findBySynchronizationStatus(status, synchronizationStatus).then(function (allRules) {
         //create a dict {component_id: [list of rules]}
         allRules.forEach(function(rule) {
             var compIds = rule.conditions.values.map(function (cond) {
@@ -241,7 +246,8 @@ var updateRule = function (options, callback) {
                                     rule: rule,
                                     domainId: accountId,
                                     user: user,
-                                    status: rule.status
+                                    status: rule.status,
+                                    synchronizationStatus: Rule.ruleSynchronizationStatus.notsynchronized
                                 };
 
                                 opt.externalId = externalId;
@@ -282,7 +288,8 @@ var updateRuleStatus = function (options, callback) {
             var rule = {
                 externalId: externalId,
                 lastUpdateDate: results.rule.lastUpdateDate,
-                status: status
+                status: status,
+                synchronizationStatus: Rule.ruleSynchronizationStatus.notsynchronized
             };
 
             return Rule.update(rule.externalId, results.account.public_id, rule)
@@ -302,6 +309,49 @@ var updateRuleStatus = function (options, callback) {
                 errMsg = errBuilder.build(err);
             }
             callback(errMsg);
+        });
+};
+
+var isRuleSynchronizationStatusValid = function(synchronizationStatus) {
+    var isValid = false;
+    Object.keys(Rule.ruleSynchronizationStatus).forEach(function(status) {
+        if (Rule.ruleSynchronizationStatus[status] === synchronizationStatus) {
+            isValid = true;
+        }
+    });
+
+    return isValid;
+};
+
+var deleteRulesWithDeletedStatus = function(rulesExternalIds, synchronizationStatus) {
+    if (synchronizationStatus === Rule.ruleSynchronizationStatus.synchronized) {
+        return Rule.deleteRulesByStatus(rulesExternalIds, Rule.ruleStatus.deleted);
+    } else {
+        return Q.resolve();
+    }
+};
+
+var updateRuleSynchronizationStatus = function (synchronizationStatus, rulesExternalIds) {
+    if (!isRuleSynchronizationStatusValid(synchronizationStatus)) {
+        return Q.reject(errBuilder.build(errBuilder.Errors.Rule.InvalidSynchronizationStatus));
+    }
+
+    return deleteRulesWithDeletedStatus(rulesExternalIds, synchronizationStatus)
+        .then(function () {
+            return Rule.update(rulesExternalIds, null, {synchronizationStatus: synchronizationStatus});
+        })
+        .then(function (updatedRules) {
+            return updatedRules;
+        })
+        .catch(function () {
+            throw errBuilder.Errors.Rule.InternalError.UpdatingError;
+        })
+        .catch(function (err) {
+            var errMsg = errBuilder.build(errBuilder.Errors.Generic.InternalServerError);
+            if (err && err.code) {
+                errMsg = errBuilder.build(err);
+            }
+            throw errMsg;
         });
 };
 
@@ -420,5 +470,6 @@ module.exports = {
     deleteRule: deleteRule,
     getRulesByStatus: getRulesByStatus,
     addRuleExecution: addRuleExecution,
-    groupByComponentId: groupByComponentId
+    groupByComponentId: groupByComponentId,
+    updateRuleSynchronizationStatus: updateRuleSynchronizationStatus
 };

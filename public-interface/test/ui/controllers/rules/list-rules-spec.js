@@ -293,8 +293,8 @@ describe('list rules', function(){
         expect(actual.length).to.equal(5);
         expect(actual[0].id).to.equal('Draft');
         expect(actual[0].title).to.equal('Draft');
-        expect(actual[1].id).to.equal('Delete');
-        expect(actual[1].title).to.equal('Delete');
+        expect(actual[1].id).to.equal('Deleted');
+        expect(actual[1].title).to.equal('Deleted');
         expect(actual[2].id).to.equal('Active');
         expect(actual[2].title).to.equal('Active');
         expect(actual[3].id).to.equal('On-hold');

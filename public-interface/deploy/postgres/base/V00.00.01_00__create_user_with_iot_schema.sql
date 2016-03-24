@@ -66,6 +66,7 @@ BEGIN
     execute add_enum_if_not_exist('enum_transport_type', '''mqtt'',''ws''');
     execute add_enum_if_not_exist('enum_user_type', '''system'',''user''');
     execute add_enum_if_not_exist('enum_alert_reset_type', '''Automatic'',''Manual''');
+    execute add_enum_if_not_exist('enum_sync_status', '''NotSync'',''Sync''');
 
     IF NOT EXISTS (
         SELECT * FROM pg_type

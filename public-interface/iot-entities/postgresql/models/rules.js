@@ -37,7 +37,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         },
         status: {
-            type: DataTypes.ENUM('Active', 'Archived', 'Draft', 'On-hold'),
+            type: DataTypes.ENUM('Active', 'Archived', 'Draft', 'On-hold', 'Deleted'),
             allowNull: false
         },
         name: {
@@ -78,6 +78,9 @@ module.exports = function (sequelize, DataTypes) {
         },
         description: {
             type: DataTypes.TEXT
+        },
+        synchronizationStatus: {
+            type: DataTypes.ENUM('NotSync','Sync')
         }
     },
     {

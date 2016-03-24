@@ -122,6 +122,15 @@ var updateRuleStatus = function(req, res, next){
     });
 };
 
+var updateRulesSynchronizationStatus = function(req, res, next){
+    return rules.updateRuleSynchronizationStatus(req.params.statusId, req.body)
+        .then(function (updatedRules) {
+            return res.status(httpStatuses.OK.code).send(updatedRules);
+        }).catch(function (err) {
+            return next(err);
+        });
+};
+
 var addRuleExecution = function (req, res, next) {
     var ruleId = req.params.ruleId,
         executions = req.body;
@@ -183,7 +192,8 @@ var cloneRule = function(req, res, next){
 
 var groupByComponentId = function(req, res, next) {
     var status = req.body.status;
-    rules.groupByComponentId(status, function(err, result) {
+    var synchronizationStatus = req.body.synchronizationStatus;
+    rules.groupByComponentId(status, synchronizationStatus, function(err, result) {
         if (!err) {
             res.status(httpStatuses.OK.code).send(result);
         } else {
@@ -205,5 +215,6 @@ module.exports = {
     deleteRule: deleteRule,
     getRulesByStatus: getRulesByStatus,
     addRuleExecution: addRuleExecution,
-    groupByComponentId: groupByComponentId
+    groupByComponentId: groupByComponentId,
+    updateRulesSynchronizationStatus: updateRulesSynchronizationStatus
 };

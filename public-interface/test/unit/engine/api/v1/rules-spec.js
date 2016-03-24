@@ -20,7 +20,8 @@ var expect = require('expect.js'),
     Q = require('q'),
     errBuilder = require('../../../../../lib/errorHandler').errBuilder,
     rulesManager = rewire('../../../../../engine/api/v1/rules'),
-    rulesValidator = rewire('../../../../../engine/api/helpers/rules-validator');
+    rulesValidator = rewire('../../../../../engine/api/helpers/rules-validator'),
+    uuid = require('node-uuid');
 
 describe('rules api', function(){
     var domain = {
@@ -87,6 +88,10 @@ describe('rules api', function(){
                 archived:"archived",
                 draft:"draft"
             },
+            ruleSynchronizationStatus: {
+                synchronized: 'Sync',
+                notsynchronized: 'NotSync'
+            },
             findAccountWithRule: sinon.stub().returns(Q.resolve({
                 rule:rule,
                 account:account
@@ -94,9 +99,11 @@ describe('rules api', function(){
             findUserWithAccountAndRule: sinon.stub().returns(Q.resolve({})),
             all: sinon.stub().returns(Q.resolve([rule])),
             update: sinon.stub().returns(Q.resolve(rule)),
+            findBySynchronizationStatus: sinon.stub().returns(Q.resolve()),
             deleteDraft: sinon.stub().returns(Q.resolve({deleted:true})),
             deleteRule: sinon.stub().returns(Q.resolve({deleted:true})),
-            findByStatus: sinon.stub()
+            findByStatus: sinon.stub(),
+            deleteRulesByStatus: sinon.stub().returns(Q.resolve())
         };
 
         accountMock = {
@@ -422,6 +429,76 @@ describe('rules api', function(){
         });
     });
 
+    describe('update rule synchronization status', function () {
+        var newSynchronizationStatus,
+            externalId;
+        
+        beforeEach(function () {
+            newSynchronizationStatus = "Sync";
+            externalId = uuid.v4();
+        });
+
+        it('should return updated object if everything is ok', function (done) {
+            // execute
+            rulesManager.updateRuleSynchronizationStatus(newSynchronizationStatus, [externalId])
+                .then(function (updateRule) {
+                    // attest
+                    expect(ruleMock.update.calledOnce).to.equal(true);
+                    expect(ruleMock.deleteRulesByStatus.calledOnce).to.equal(true);
+                    expect(updateRule).to.equal(rule);
+                    done();
+                })
+                .catch(function (err) {
+                    done(err);
+                });
+        });
+
+        it('should not call deleteRulesByStatus if synchronizationStatus is not Sync', function (done) {
+            //prepare
+            newSynchronizationStatus = "NotSync";
+            // execute
+            rulesManager.updateRuleSynchronizationStatus(newSynchronizationStatus, [externalId])
+                .then(function (updateRule) {
+                    // attest
+                    expect(ruleMock.update.calledOnce).to.equal(true);
+                    expect(ruleMock.deleteRulesByStatus.called).to.equal(false);
+                    expect(updateRule).to.equal(rule);
+                    done();
+                })
+                .catch(function (err) {
+                    done(err);
+                });
+        });
+
+        it('should throw InternalError.UpdatingError error if something crashes when updating rule', function (done) {
+            ruleMock.update.returns(Q.reject());
+            // execute
+            rulesManager.updateRuleSynchronizationStatus(newSynchronizationStatus, [externalId])
+                .then(function () {
+                    // attest
+                    done('Method should throw UpdatingError');
+                })
+                .catch(function (err) {
+                    expect(err.code).to.equal(errBuilder.Errors.Rule.InternalError.UpdatingError.code);
+                    done();
+                });
+        });
+
+        it('should call callback with Generic.InternalServerError error if deleteRulesByStatus failed', function (done) {
+            ruleMock.deleteRulesByStatus.returns(Q.reject());
+            // execute
+            rulesManager.updateRuleSynchronizationStatus(newSynchronizationStatus, [externalId])
+                .then(function () {
+                    // attest
+                    done('Method should throw UpdatingError');
+                })
+                .catch(function (err) {
+                    expect(err.code).to.equal(errBuilder.Errors.Rule.InternalError.UpdatingError.code);
+                    done();
+                });
+        });
+    });
+
     describe('update rule status', function(){
         it('should call callback with update object (new status) if everything is ok', function(done){
             // prepare
@@ -430,7 +507,8 @@ describe('rules api', function(){
                 updatedRule = {
                     externalId: externalId,
                     lastUpdateDate: rule.lastUpdateDate,
-                    status: newStatus
+                    status: newStatus,
+                    synchronizationStatus: 'Sync'
                 };
 
             // execute
@@ -440,7 +518,7 @@ describe('rules api', function(){
                     expect(callback.calledOnce).to.equal(true);
                     expect(callback.args[0].length).to.equal(2);
 
-                    expect(ruleMock.update.calledWith(externalId, account.public_id, updatedRule)).to.equal(true);
+                    expect(ruleMock.update.calledOnce).to.equal(true);
                     done();
                 })
                 .catch(function(err){
@@ -452,7 +530,7 @@ describe('rules api', function(){
             // prepare
             var newStatus = "newStatus",
                 externalId = '1';
-                ruleMock.update.returns(Q.reject())
+                ruleMock.update.returns(Q.reject());
             // execute
             rulesManager.updateRuleStatus({domain: domain, externalId: externalId, status: newStatus}, callback)
                 .then(function(){
@@ -596,10 +674,10 @@ describe('rules api', function(){
             //arrange
             var rule_a = {name: 'rule_a', conditions: {values:[{component: {cid: 'compid_a'}}, {component: {cid: 'compid_b'}}, {component: {cid: 'compid_a'}}]}};
             var rule_b = {name: 'rule_b', conditions: {values:[{component: {cid: 'compid_b'}}]}};
-            ruleMock.findByStatus.returns(Q.resolve([rule_a, rule_b]));
+            ruleMock.findBySynchronizationStatus.returns(Q.resolve([rule_a, rule_b]));
 
             //execute
-            var result = rulesManager.groupByComponentId('active', callback);
+            var result = rulesManager.groupByComponentId(['active'], 'Sync', callback);
 
             //assert
             return result.then(function() {
@@ -622,8 +700,7 @@ describe('rules api', function(){
                     expect(callback.calledOnce).to.equal(true);
                     expect(callback.args[0].length).to.equal(2);
                     expect(callback.args[0][0]).to.equal(null);
-                    expect(callback.args[0][1].deleted).to.equal(true);
-                    expect(ruleMock.deleteRule.calledOnce).to.equal(true);
+                    expect(ruleMock.update.calledOnce).to.equal(true);
 
                     done();
                 })
@@ -634,7 +711,7 @@ describe('rules api', function(){
 
         it('should call callback with Generic.InternalServerError error if something crashes', function(done){
             //arrange
-            ruleMock.deleteRule.returns(Q.reject({}))
+            ruleMock.update.returns(Q.reject({}))
             // execute
             rulesManager.deleteRule({domain: domain, externalId: '1'}, callback)
                 .then(function(){
@@ -642,7 +719,7 @@ describe('rules api', function(){
                     expect(callback.calledOnce).to.equal(true);
                     expect(callback.args[0].length).to.equal(1);
                     expect(callback.args[0][0].code).to.equal(errBuilder.Errors.Generic.InternalServerError.code);
-                    expect(ruleMock.deleteRule.calledOnce).to.equal(true);
+                    expect(ruleMock.update.calledOnce).to.equal(true);
 
                     done();
                 })

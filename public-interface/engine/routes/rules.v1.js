@@ -35,5 +35,6 @@ module.exports = {
         app.put(VERSION + PATH + '/:ruleId/status', schemaValidator.validateSchema(schemas.rule.PUTStatus), rules.updateRuleStatus);
         app.post(VERSION + PATH + '/:ruleId/execution', schemaValidator.validateSchema(schemas.rule.EXECUTION), rules.addRuleExecution);
         app.post(VERSION + '/components/rules', schemaValidator.validateSchema(schemas.rule.STATUS), rules.groupByComponentId);
+        app.put(VERSION + '/rules/synchronization_status/:statusId', schemaValidator.validateSchema(schemas.rule.PUTSynchronizationStatus), rules.updateRulesSynchronizationStatus);
     }
 };

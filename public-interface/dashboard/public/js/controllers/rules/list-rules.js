@@ -58,7 +58,7 @@ iotController.controller('ListRulesCtrl', function($scope,
     };
     $scope.statuses = {
         draft: 'Draft',
-        delete: 'Delete',
+        deleted: 'Deleted',
         active: 'Active',
         onhold: 'On-hold',
         archived: 'Archived'

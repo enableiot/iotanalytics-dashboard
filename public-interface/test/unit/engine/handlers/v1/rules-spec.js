@@ -19,7 +19,9 @@ var expect = require('expect.js'),
     sinon = require('sinon'),
     rewire = require('rewire'),
     rulesHandler = rewire('../../../../../engine/handlers/v1/rules'),
-    httpStatuses = require('../../../../../engine/res/httpStatuses');
+    httpStatuses = require('../../../../../engine/res/httpStatuses'),
+    uuid = require('node-uuid'),
+    Q = require('q');
 
 describe('rules handler', function(){
     var reqMock = {
@@ -250,6 +252,62 @@ describe('rules handler', function(){
             expect(nextSpy.calledWith(error)).to.equal(true);
 
             done();
+        });
+    });
+
+    describe('update rule synchronizationStatus', function () {
+        var ruleId, rule;
+
+        beforeEach(function () {
+            ruleId = uuid.v4();
+            rule = {
+                externalId: ruleId
+            };
+            reqMock.params = {statusId: 'Sync'};
+            reqMock.body = [ruleId];
+        });
+
+        it('should replies with 200 if everything is ok', function (done) {
+            // prepare
+            var apiMock = {
+                updateRuleSynchronizationStatus: sinon.stub().returns(Q.resolve(rule))
+            };
+
+            rulesHandler.__set__('rules', apiMock);
+
+            // execute
+            rulesHandler.updateRulesSynchronizationStatus(reqMock, resMock)
+                .then(function () {
+                    // attest
+                    expectOkResponse(rule);
+                    done();
+                })
+                .catch(function (err) {
+                    done(err);
+                });
+
+        });
+
+        it('should replies with an error if api.updateRuleSynchronizationStatus crashes', function (done) {
+            // prepare
+            var error = new Error(500),
+                apiMock = {
+                    updateRuleSynchronizationStatus: sinon.stub().returns(Q.reject(error))
+                },
+                nextSpy = sinon.spy();
+
+            rulesHandler.__set__('rules', apiMock);
+
+            // execute
+            rulesHandler.updateRulesSynchronizationStatus(reqMock, {}, nextSpy)
+                .then(function () {
+                    // attest
+                    expect(nextSpy.calledWith(error)).to.equal(true);
+                    done();
+                })
+                .catch(function (err) {
+                    done(err);
+                });
         });
     });
 

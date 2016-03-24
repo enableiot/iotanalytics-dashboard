@@ -323,27 +323,38 @@ var executeSql = function (sql, transaction) {
     return sequelize.query(sql, {transaction: transaction});
 };
 
-exports.initSchema = function () {
-    var path = '/../../../deploy/postgres/base/';
+var executeScriptsFromFiles = function(path, files, transaction) {
+    var promisesToExecute = [];
+    return Q.allSettled(files.map(function (fileName) {
+        return Q.nfcall(fs.readFile, __dirname + path + fileName, 'utf-8')
+            .then(function (sql) {
+                promisesToExecute.push(executeSql(sql, transaction));
+            });
+        }))
+        .then(function () {
+            return promisesToExecute.reduce(Q.when, new Q());
+        });
+};
 
+var readScriptsFromFile = function(path) {
     return Q.nfcall(fs.readdir, __dirname + path)
         .then(function (files) {
             if (!files || !Array.isArray(files)) {
                 throw new Error('Unable to read database schema scripts');
             }
             files.sort();
-            var promisesToExecute = [];
+            return files;
+        });
+};
+
+var executeScriptsWithTransaction = function() {
+    var path = '/../../../deploy/postgres/base/';
+
+    return readScriptsFromFile(path)
+        .then(function(files) {
             return postgresProvider.startTransaction()
-                .then(function (transaction) {
-                    return Q.allSettled(files.map(function (fileName) {
-                        return Q.nfcall(fs.readFile, __dirname + path + fileName, 'utf-8')
-                            .then(function (sql) {
-                                promisesToExecute.push(executeSql(sql, transaction));
-                            });
-                        }))
-                        .then(function () {
-                            return promisesToExecute.reduce(Q.when, new Q());
-                        })
+                .then(function(transaction) {
+                    return executeScriptsFromFiles(path, files, transaction)
                         .then(function () {
                             return postgresProvider.commit(transaction)
                                 .then(function() {
@@ -353,10 +364,32 @@ exports.initSchema = function () {
                         .catch(function (err) {
                             return postgresProvider.rollback(transaction)
                                 .then(function() {
-                                    logger.error('Unable to create database schema: ' + err);
+                                    throw err;
                                 });
                         });
                 });
+        });
+};
+
+var executeScriptsWithoutTransaction = function () {
+    var path = '/../../../deploy/postgres/base/no_transaction_scripts/';
+
+    return readScriptsFromFile(path)
+        .then(function (files) {
+            return executeScriptsFromFiles(path, files)
+                .then(function () {
+                    logger.info('Database schema updated');
+                });
+        });
+};
+
+exports.initSchema = function () {
+    return executeScriptsWithTransaction()
+        .then(function() {
+            return executeScriptsWithoutTransaction();
+        })
+        .catch(function (err) {
+            logger.error('Unable to create database schema: ' + err);
         });
 };
 

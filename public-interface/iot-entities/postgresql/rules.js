@@ -29,8 +29,10 @@ var rules = require('./models').rules,
     uuid = require('node-uuid');
 
 
-var ruleStatus = {active: 'Active', archived: 'Archived', onhold: 'On-hold', draft: 'Draft'};
+var ruleStatus = {active: 'Active', archived: 'Archived', onhold: 'On-hold', draft: 'Draft', deleted: 'Deleted'};
+var ruleSynchronizationStatus = {synchronized: 'Sync', notsynchronized: 'NotSync'};
 exports.ruleStatus = ruleStatus;
+exports.ruleSynchronizationStatus = ruleSynchronizationStatus;
 
 var create = function (rule) {
     var ruleModel = ruleInterpreter.toDb(rule);
@@ -67,11 +69,14 @@ exports.findByExternalIdAndAccount = function (externalId, accountId) {
 var update = function (externalId, accountId, data) {
     var filter = {
         where: {
-            accountId: accountId,
             externalId: externalId
         },
         returning: true
     };
+
+    if (accountId) {
+        filter.where.accountId = accountId;
+    }
     var ruleModel = ruleInterpreter.toDb(data);
     return rules.update(ruleModel, filter)
         .then(function (updatedRule) {
@@ -204,7 +209,7 @@ exports.deleteRule = function (externalId, accountId) {
     var filter = {
         where: {
             accountId: accountId,
-            externalId: externalId,
+            externalId: externalId
         }
     };
     return rules.destroy(filter)
@@ -215,6 +220,19 @@ exports.deleteRule = function (externalId, accountId) {
                 throw errBuilder.Errors.Rule.NotFound;
             }
         })
+        .catch(function (err) {
+            throw err;
+        });
+};
+
+exports.deleteRulesByStatus = function (externalId, status) {
+    var filter = {
+        where: {
+            status: status,
+            externalId: externalId
+        }
+    };
+    return rules.destroy(filter)
         .catch(function (err) {
             throw err;
         });
@@ -321,6 +339,20 @@ exports.findByStatus = function(status) {
             status: status
         }
     };
+    return rules.findAll(filter).then(function(allRules) {
+        return interpreterHelper.mapAppResults(allRules, ruleInterpreter);
+    });
+};
+
+exports.findBySynchronizationStatus = function(status, synchronizationStatus) {
+    var filter = {
+        where: {
+            status: status
+        }
+    };
+    if (synchronizationStatus) {
+        filter.where.synchronizationStatus = synchronizationStatus;
+    }
     return rules.findAll(filter).then(function(allRules) {
         return interpreterHelper.mapAppResults(allRules, ruleInterpreter);
     });

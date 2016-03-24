@@ -390,6 +390,15 @@
             }
         }
     },
+    "PUTSynchronizationStatus": {
+        "name": "rule-synchronization-status",
+        "type": "array",
+        "required": true,
+        "minItems": 1,
+        "items": {
+            "type": "string"
+        }
+    },
     "DELETE_DRAFT": {
         "name" : "deleteDraft",
         "additionalProperties" : false,
@@ -435,9 +444,18 @@
         "additionalProperties": false,
         "properties": {
             "status": {
+                "type": "array",
+                "required": true,
+                "minItems": 1,
+                "items": {
+                    "type": "string",
+                    "enum": ["Active", "Archived", "On-hold", "Draft", "Deleted"]
+                }
+            },
+            "synchronizationStatus": {
                 "type": "string",
-                "enum": ["Active", "Archived", "On-hold", "Draft"],
-                "required": true
+                "enum": ["NotSync", "Sync"],
+                "required": false
             }
         }
     }
