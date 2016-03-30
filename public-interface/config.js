@@ -206,6 +206,8 @@ if (process.env.NODE_ENV && (process.env.NODE_ENV.toLowerCase().indexOf("local")
     config.logger.transport.console.logstash = false;
     config.logger.logLevel = 'debug';
     config.logger.maxLines = 60000;
+
+    config.controlChannel.ws.secure = false;
 }
 
 module.exports = config;
