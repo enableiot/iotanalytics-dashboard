@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS "dashboard"."commands" (
     "complexCommandId" UUID NOT NULL REFERENCES "dashboard"."complexCommands" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "componentId" VARCHAR(255) NOT NULL,
     "transport" "dashboard"."enum_transport_type" NOT NULL,
-    "parameters" TEXT NOT NULL,
+    "parameters" JSON NOT NULL,
     "created" TIMESTAMP WITH TIME ZONE NOT NULL,
     "updated" TIMESTAMP WITH TIME ZONE NOT NULL,
     "accountId" UUID NOT NULL REFERENCES "dashboard"."accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
