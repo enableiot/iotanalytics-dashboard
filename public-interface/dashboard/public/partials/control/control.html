@@ -186,7 +186,7 @@ limitations under the License.
             {{i18n.control.clear}}
             <i class="glyphicon glyphicon-remove"></i>
         </button>
-        <button id="btnSave" class="btn btn-primary btn-sm pull-right" type="button" ng-click="saveAll()" ng-disabled="pending">
+        <button id="btnSave" class="btn btn-primary btn-sm pull-right" type="button" ng-click="saveAll()" ng-disabled="actionsList.length == 0">
             {{i18n.control.saveAsComplexCommand}}
             <i class="glyphicon glyphicon-floppy-save"></i>
         </button>
