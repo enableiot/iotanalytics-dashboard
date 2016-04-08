@@ -14,6 +14,17 @@
 # limitations under the License.
 #
 
+function check_return {
+	echo "$RETURN"
+	FAILED=$(echo $RETURN | grep "FAILED" | wc -l)
+
+	if [ "$FAILED" -eq 1 ]
+	then
+		exit 1
+	fi
+}
+
+
 cd public-interface
 CURRENT_PATH=`pwd`
 
@@ -24,12 +35,11 @@ SPACE=${TARGET[1]}
 ${GRUNT} build &&
 cd ../ &&
 
-RETURN=($(cf push ${SPACE}-dashboard))
+RETURN=("$(cf push ${SPACE}-dashboard)")
 
-if [ "$RETURN" = "FAILED" ]
-then
-	exit 1
-fi
+check_return
 
 exit 0
+
+
 
