@@ -29,7 +29,7 @@
     "email-templates": "^0.1.7",
     "errorhandler": "^1.4.0",
     "express": "^4.12.4",
-    "jsjws": "^0.5.0",
+    "jsjws": "^0.7.0",
     "kafka-node": "^0.2.12",
     "moment": ">=2.5.1",
     "mqtt": "0.3.11",
